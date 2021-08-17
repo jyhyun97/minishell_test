@@ -1,63 +1,98 @@
-#include <signal.h> 
-#include <unistd.h> 
-#include <stdlib.h>
-#include <stdio.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+#include "minishell.h"
+#include "list.h"
 
-size_t	ft_strlen(const char *s)
+void parse_line(char *line, t_list *envp_list)
 {
-	size_t i;
+    char *tmp;
+    char *tmp2;
+    int i;
 
-	i = 0;
-	while (s[i] != '\0')
-		i++;
-	return (i);
-}
-
-void sig_int(int sig_number)
-{
-    //^C 안뜨게 하기
-    //입력하다 취소하고 엔터누르면 그 다음 줄에 그 입력중이던 값이 출력되는 현상?
-    //위 두 현상은 rl_replace_line(); -> 나중에 설치
-
-    //rl_redisplay();
-    if (sig_number == SIGINT)
+    printf("line : %s\n", line);
+    i = 0;
+    while(line[i] != '\0')
     {
-	    write(1, "\nminishell$ ", 12);
+        if (line[i] == '\"')
+        {
+            i++;
+            char *token;
+            while (line[i] == '\"')
+            {
+//
+            }
+                token = ft_substr(line[시작점], 끝점);
+                tmp2 = ft_strjoin(tmp, token);
+                free(token)
+        }
+        else if (line[i] == '\'')
+        {
+            //다음 '까지의 값을 저장
+        }
+        else
+        {
+            //그냥 저장
+        }
+        i++;
     }
-    //else if (sig_number == SIGQUIT)
-    //{
-    //    printf("sig2\n");
-    //}
-    //else if(sig_number == SIGCHLD)
-    //{
-    //    printf("sig3\n");
-    //}
-}
+    printf("tmp : %s\n", tmp);
 
-void signal_initialize(void)
-{
-	signal(SIGINT, sig_int);
-	//signal(SIGQUIT, sig_int);
-	//signal(SIGCHLD, sig_int);//
+    //tmp = 123456
+    //"aaa'a'" |"bbb" |"ccc"cc"" | "$tmp"
+    
+    //1. "aaa'a'" |"bbb" |"ccc"cc"" | "$tmp"
+    //2. aaa'a' |bbb |ccccc | $tmp
+    //3. aaa'a' aaa |bbb |ccccc | 123456
+    //4. 구조체 저장 [명령어, aaa'a'], [옵션, zzz], [옵션, xxx], [인자, aaa], [파이프, |], [명령어, ccccc], [파이프, |], [명령어, 123456]
+    //5. 프로세스 구조체 저장 [명령어, 옵션(하나의 문자열), 인자, 파이프], [명령어, 파이프], [명령어]
+
+    //따옴표 : 첫번째 등장 ~ 두번째 등장까지 왼->오 방향
+    //"a'a'a"a"a'a'a"
+
+
+    //aaaa abds"asdb" adbab "ccc"
+    //단순 문자열 분리
+    //
+    //         "aaaa$A abdsas"db"| 'adbdb' | ccc"
+    //char *~~ "aaaa1234 abdsasdb| adbab | ccc" 한 줄 만들기
+    //line에서 "" '' 분리
+    //화이트 스페이스 분리
+    //파이프, 리다이렉션
+    //환경변수 대입
+
+    //" "as" "   "as"
+    //
+    //
+    //분리된 정보 token_list저장
+
+    //token_list를 process_list로
 }
 
 
 int main(int argc, char **argv, char **envp)
 {
     char *line;
-    
-    signal_initialize();
-    //envp list
+    t_list *envp_list;
 
-    while(1)
+	//save_input_mode();
+	//set_input_mode();
+    //signal_initialize();
+    
+    envp_list_initialize(envp, &envp_list);
+
+    while (1)
     {
-        line = readline("minishell$ ");
-        //printf("%s\n", line);
+        line = readline("minishell$ ");//
         if (line && *line)
             add_history(line);
+        parse_line(line, envp_list);
+        //
         free(line);
+        rl_redisplay();
+        rl_replace_line("\n", 0);
     }
+  	//reset_input_mode();
+
     return (0);
 }
+
+//  export LDFLAGS="-L/opt/homebrew/opt/readline/lib"
+//  export CPPFLAGS="-I/opt/homebrew/opt/readline/include"

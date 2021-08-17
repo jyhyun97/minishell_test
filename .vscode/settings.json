@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "readline.h": "c",
+        "__node_handle": "c",
+        "termios.h": "c"
     }
 }
