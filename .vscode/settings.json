@@ -3,6 +3,9 @@
         "stdlib.h": "c",
         "readline.h": "c",
         "__node_handle": "c",
-        "termios.h": "c"
+        "termios.h": "c",
+        "minishell.h": "c",
+        "cstdlib": "c",
+        "libft.h": "c"
     }
 }

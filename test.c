@@ -1,71 +1,40 @@
-#include <termios.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include "test/include/readline/readline.h"
+#include "test/include/readline/history.h"
+#include "libft/libft.h"
 
 /*
-    int tcgetattr(int fd, struct termios *termios_p);
+	1. 공백 기준으로 split(따옴표, 쌍따옴표 안에 공백있을 시는 무시)
+	2. 따옴표 없애주기, 환경변수 처리
 
-    int tcsetattr(int fildes, int optional_actions, struct termios *termios_p);
-
+	3. split 2차원 배열을 토큰 리스트에 추가  key, value
 */
 
-struct termios org_term;
-struct termios new_term;
 
-void save_input_mode(void)
+void parse_line(char *line)
 {
-    tcgetattr(STDIN_FILENO, &org_term); // STDIN으로부터 터미널 속성을 받아온다
-}
+	printf("line : %s\n", line);
 
-void set_input_mode(void)
-{
-    tcgetattr(STDIN_FILENO, &new_term);          // STDIN으로부터 터미널 속성을 받아온다
-    new_term.c_lflag &= ~(ICANON | ECHO);        // ICANON, ECHO 속성을 off
-    new_term.c_cc[VMIN] = 1;                     // 1 바이트씩 처리
-    new_term.c_cc[VTIME] = 0;                    // 시간은 설정하지 않음
-    tcsetattr(STDIN_FILENO, TCSANOW, &new_term); // 변경된 속성의 터미널을 STDIN에 바로 적용
-}
-
-// 기존의 터미널 세팅으로 다시 변경
-void reset_input_mode(void)
-{
-    tcsetattr(STDIN_FILENO, TCSANOW, &org_term); // STDIN에 기존의 터미널 속성을 바로 적용
 }
 
 int main(void)
 {
-	int ch = 0;
-	int idx = -1;
+	char *line;
 
-	save_input_mode();
-	set_input_mode();
-	while (read(0, &ch, 1) > 0)
-	{
-		if (ch == 4)
-		{
-            write(0, "check\n",6);
-			if (idx == -1)
-				return 0;
-			else
-				continue;
-		}
-		else if (ch == 127)
-		{
-			if (idx >= 0)
-			{
-				--idx;
-				write(0, "\b \b", 3);
-			}
-		}
-		else if (ch == '\n')
-			break;
-		else
-		{
-			++idx;
-			write(0, &ch, sizeof(int));
-		}
-		ch = 0;
-	}
-	reset_input_mode();
+    while (1)
+    {
+        line = readline("minishell$ ");
+		if (line && *line)
+            add_history(line);
+        parse_line(line);
+        free(line);
+        rl_redisplay();
+        rl_replace_line("\n", 0);
+    }
 	return (0);
 }
+
+//  export LDFLAGS="-L/opt/homebrew/opt/readline/lib"
+//  export CPPFLAGS="-I/opt/homebrew/opt/readline/include"

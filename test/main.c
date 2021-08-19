@@ -14,14 +14,14 @@ void parse_line(char *line, t_list *envp_list)
         if (line[i] == '\"')
         {
             i++;
-            char *token;
+            // char *token;
             while (line[i] == '\"')
             {
-//
+
             }
-                token = ft_substr(line[시작점], 끝점);
-                tmp2 = ft_strjoin(tmp, token);
-                free(token)
+                // token = ft_substr(line[시작점], 끝점);
+                // tmp2 = ft_strjoin(tmp, token);
+                // free(token)
         }
         else if (line[i] == '\'')
         {
