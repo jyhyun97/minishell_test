@@ -12,12 +12,11 @@
 	3. split 2차원 배열을 토큰 리스트에 추가  key, value
 */
 
-
-void parse_line(char *line)
+char **convert_env(char **arr, )
 {
-	printf("line : %s\n", line);
-
+    
 }
+
 
 int main(void)
 {

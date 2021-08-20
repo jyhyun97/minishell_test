@@ -1,4 +1,4 @@
-#include "libft/libft.h"
+#include "minishell.h"
 
 char	**arr_free(char **arr)
 {
@@ -105,7 +105,7 @@ static char **arr_fill(char **arr, char const *s, char c)
 	return (arr);
 }
 
-char	**ft_split(char const *s, char c)
+char	**word_split(char const *s, char c)//custom_split  word_split 
 {
 	char **arr;
 
@@ -115,25 +115,4 @@ char	**ft_split(char const *s, char c)
 	if ((arr = arr_fill(arr, s, c)) == NULL)
 		return (NULL);
 	return (arr);
-}
-
-int main(void)
-{
-	char **arr;
-	int i = 0;
-	char *str = "\"\" \"\"\"\"  \"\"";
-	char *str2 = "a\"  a$AA  \" \"\" b c'd e'f   ggg \"aa\"";
-	char *str3 = "\"$\" a\"  a$AA \"\"\"\"\"\" \" \"\" b c'd e'f   ggg \"aa\" \"\"";
-	//a"  a$AA  " ""  b c'd e'f   ggg "aa"
-	arr = ft_split(str3, ' ');
-	// 1.     a\"  a$AA  \" 과 같은 상황
-	// 2. \"\" 연속될 때
-	// 3. 맨 마지막 글자가 안들어간다
-	while (arr[i] != 0)
-	{
-		printf("[%d] : [%s]\n", i, arr[i]);
-		i++;
-	}
-	arr_free(arr);
-    return (0);
 }
