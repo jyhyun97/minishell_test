@@ -12,7 +12,7 @@
 	3. split 2차원 배열을 토큰 리스트에 추가  key, value
 */
 
-char **convert_env(char **arr, )
+char **convert_env(char **arr, t_li)
 {
     
 }
