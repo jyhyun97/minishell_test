@@ -71,10 +71,15 @@ static int cnt_letter(char const *s, char c)
 			i += skip_quotes(&s[i], '\'');
 		if (s[i] == '\0')
 			return (i);
-		if (s[i] == c || s[i + 1] == '\0')
+		if (s[i + 1] == '\0')
+		{
+			i++;
+			return (i);
+		}
+		if (s[i] == c/* || s[i + 1] == '\0'*/)
 			return (i);
 		if (s[i] != '\0' && s[i] != '"')
-			i++;	
+			i++;
 	}
 	return (0);
 }

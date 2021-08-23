@@ -26,6 +26,7 @@ size_t ft_strlen(const char *s);
 char *ft_strdup(const char *s1);
 
 //parser.c
+int skip_quotes(char const *s, char q);
 char	**word_split(char const *s, char c);
 char	**arr_free(char **arr);
 #endif
