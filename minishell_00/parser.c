@@ -9,8 +9,11 @@ char	**arr_free(char **arr)
 	{
 		free(arr[i]);
 		i++;
+	//	printf("free 12 : %d\n", i);
 	}
 	free(arr);
+	//printf("free 15 check\n");
+
 	return (NULL);
 }
 

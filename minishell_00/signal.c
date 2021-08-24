@@ -11,7 +11,7 @@ void sig_int(int sig_number)
     {
         write(1, "\nminishell$ ", 12);
         rl_redisplay();
-        rl_replace_line("\n", 0);
+        //rl_replace_line("\n", 0);
     }
     else if (sig_number == SIGQUIT)
     {

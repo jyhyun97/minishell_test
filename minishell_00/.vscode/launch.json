@@ -4,18 +4,18 @@
     // 자세한 내용을 보려면 https://go.microsoft.com/fwlink/?linkid=830387을(를) 방문하세요.
     "version": "0.2.0",
     "configurations": [
-        
         {
-            "name": "(lldb) 시작",
-            "type": "cppdbg",
+            "name": "gcc - 활성 파일 빌드 및 디버그",
+            "type": "lldb",
             "request": "launch",
             "program": "/Users/jeonhyun/Desktop/42cursus/minishell/minishell_00/a.out",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,
             "MIMode": "lldb",
+            //"preLaunchTask": "C/C++: gcc 활성 파일 빌드"
         }
     ]
 }

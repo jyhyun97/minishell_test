@@ -5,10 +5,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-//#include <readline/readline.h>
-//#include <readline/history.h>
-#include "include/readline/readline.h"
-#include "include/readline/history.h"
+#include <readline/readline.h>
+#include <readline/history.h>
+// #include "include/readline/readline.h"
+// #include "include/readline/history.h"
 #include "libft/libft.h"
 
 #include "list.h"

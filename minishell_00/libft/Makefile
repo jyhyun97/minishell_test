@@ -14,7 +14,7 @@ NAME = libft.a
 
 CC = gcc
 
-CFLAGS	= -Wall -Werror -Wextra
+CFLAGS	= -g -Wall -Werror -Wextra
 
 FILES = ft_memset \
 		ft_bzero \

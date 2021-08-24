@@ -15,7 +15,6 @@ int measure_env_key(char *str)
     return (i);
 }
 
-
 char *get_env(char *key, t_list *envp_list)
 {
     int i = 0;
@@ -39,6 +38,7 @@ char *new_arr_str(char *arr_str, char *envp_key, t_list *envp_list)
     int i = 0;//arr_str
     int j = 0;//new_str
     int k = 0;//envp_value
+
     new_str = (char *)malloc(sizeof(char) * ((int)ft_strlen(arr_str) + (int)ft_strlen(envp_value) + 4));
     while (arr_str[i] != '$' && arr_str[i] != '\0')
     {
@@ -64,6 +64,7 @@ char *new_arr_str(char *arr_str, char *envp_key, t_list *envp_list)
         i++;
     }
     new_str[j] = '\0';
+    free(arr_str);
     return (new_str);
 
     //앞의 문자와 환경변수 붙여 하나의 문자열로 만들어 주는 함수.
@@ -150,13 +151,14 @@ char **convert_env(char **arr, t_list *envp_list)
             }
             else if (arr[i][j] == '\'')
             {
-                j += skip_quotes(&arr[i][j],'\'');
+                j += skip_quotes(&arr[i][j],'\'');//'$USER' = 7
             }
             else
                 j++;
         }
         i++;
     }
+    printf("161 %d\n", i);
     return (arr);
 }
 
@@ -170,7 +172,7 @@ void parse_line(char *line, t_list *envp_list)
 
     //환경볁수 처리
 
-    convert_env(arr, envp_list); //없는 환경변수, 같은 단어 다시 검사
+    arr = convert_env(arr, envp_list); //없는 환경변수, 같은 단어 다시 검사
     //따옴표 제거해주는 함수. strtrim ', strtrim " 해주기
     while (arr[i] != 0)
 	{
@@ -211,7 +213,7 @@ int main(int argc, char **argv, char **envp)
         
         free(line);
         rl_redisplay();
-        rl_replace_line("\n", 0);
+        //rl_replace_line("\n", 0);
     }
   	//reset_input_mode();
 
