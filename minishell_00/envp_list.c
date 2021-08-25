@@ -1,4 +1,3 @@
-#include "list.h"
 #include "minishell.h"
 
 int  split_key_value(char *str, char **key, char **value)

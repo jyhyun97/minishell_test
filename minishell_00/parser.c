@@ -40,21 +40,21 @@ static int cnt_word(char const *s, char c)
 	{
 		if (s[i] == '"')
 			i += skip_quotes(&s[i], '"'); 
-		if (s[i] == '\'')
+		else if (s[i] == '\'')
 			i += skip_quotes(&s[i], '\'');
-		if (s[i] == '\0')
+		else if (s[i] == '\0')
 		{
 			cnt++;
 			break;
+		}
+		else if (s[i] != '\0' && s[i] != '"'){
+			i++;
 		}
 		if (s[i] == c || s[i + 1] == '\0')//"aa"[\0]
 		{
 			while (s[i] == c && s[i] != '\0')
 				i++;
 			cnt++;
-		}
-		if (s[i] != '\0' && s[i] != '"'){
-			i++;
 		}
 	}
 	return (cnt);
@@ -70,21 +70,21 @@ static int cnt_letter(char const *s, char c)
 	{
 		if (s[i] == '"')
 			i += skip_quotes(&s[i], '"');
-		if (s[i] == '\'')
+		else if (s[i] == '\'')
 			i += skip_quotes(&s[i], '\'');
-		if (s[i] == '\0')
+		else if (s[i] == '\0')
 			return (i);
-		if (s[i + 1] == '\0')
+		else if (s[i + 1] == '\0')
 		{
 			i++;
 			return (i);
 		}
-		if (s[i] == c/* || s[i + 1] == '\0'*/)
+		else if (s[i] == c/* || s[i + 1] == '\0'*/)
 			return (i);
-		if (s[i] != '\0' && s[i] != '"')
+		else if (s[i] != '\0' && s[i] != '"')
 			i++;
 	}
-	return (0);
+	return (i);
 }
 
 static char **arr_fill(char **arr, char const *s, char c)
