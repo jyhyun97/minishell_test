@@ -1,106 +1,110 @@
 #include "minishell.h"
 
-int count_trimrd_token(char *token)
+
+typedef struct s_lex_node
 {
-    int i = 0;
+    int type;  // 타입 종류는?
+    char *value;
+    struct s_lexical *prev;
+    struct s_lexical *next;
+}   t_lex_node;
+
+// //노드 따로 만들기 create node
+// t_lex_node create_lexical_node(int type, char *value)
+// {
+//     t_lex_node new_node;
+
+//     return (new_node);
+// }
+
+// //붙여주는 것 따로 add node
+// void add_lexical_node(t_lex_node *cur_node, t_lex_node *next_node)
+// {
+
+// }
+
+
+void figure_token(char **tokens)
+{
     
-    while (token[i] != '\0')
-    {
-        if (token[i] == '"')
-        {
-            i++;
-            while (token[i] != '"')
-                i++;
-            i++;
-        }
-        else if (token[i] == '\'')
-        {
-            i++;
-            while (token[i] != '\'')
-                i++;
-            i++;
-        }
-        else
-            i++;
-    }
-    return (i);
 }
 
-char *trim_quote(char *token)
+void Lexicalize_token(char **tokens)
 {
+    //리스트화
     /*
-        따옴표만 제거하기.
-        따옴표 제외한 글자세기.
+        <  또는 문자 기준으로
+        뒤의 문자 타입 구분 할수 있음.
+        타입 구분 해야하면 
+        유효한지도 판정이 가능.
     */
-    char *new_str;
-    int i = 0;
-    int j = 0;
-    new_str = (char *)malloc(sizeof(char) * (count_trimrd_token(token) + 1));
+    //토큰 타입검사
     
-    while (token[i] != '\0')
-    {
-        if (token[i] == '"')
-        {
-            i++;
-            while (token[i] != '"')
-            {
-                new_str[j] = token[i];
-                i++;
-                j++;
-            }
-            i++;
-        }
-        else if (token[i] == '\'')
-        {
-            i++;
-            while (token[i] != '\'')
-            {
-                new_str[j] = token[i];
-                i++;
-                j++;
-            }
-            i++;
-        }
-        else
-        {
-            new_str[j] = token[i];
-            i++;
-            j++;
-        }
-    }
-    new_str[j] = '\0';
-    free(token);
-    return (new_str);
-}
 
-char **trim_tokens(char **tokens)
-{
-    /*
-        전체 tokens의 내용의 따옴표 제거
-    */
-    int i = 0;
-    while(tokens[i] != NULL)//
-    {
-        tokens[i] = trim_quote(tokens[i]);
-        i++;
-    }
-    return (tokens);
 }
+/*
+    int cmd_flag//
+    while(tokens[i])
+    {
+        //if 리다이렉션?
+            add_node(i, i + 1)//add_node(key, value)
+            i += 2;
+        //else
+            if (명령어?)//flag 필요?
+                add_node(cmd, i)
+                cmd_flag = 1;
+            else if (옵션?)
+                add_node(opt, i)
+            else if (인자?)
+                add_node(arg)
+            else if (파이프?)
+                add_node(pipe, i)
+            i++;
+    }
+*/
+
+//[리다이렉션s][명령어][리다이렉션s][옵션s][argus][리다이렉션s][파이프]
+//리다이렉션 = <,<<,>>,> type. 뒤에 <>|으로 시작하지 않는 문자열 type: < value : 파일이름
+//명령어 = 리다이렉션 제외하고 첫번째로 나오는 문자열
+//옵션 = 맨 앞에 -으로 시작하는 문자열
+//인자 = 명령어, [옵션] 다음에 나오는 문자열
+//파이프 = type : pipe, value : |
+
+
 void parse_line(char *line, t_list *envp_list)
 {
     char **tokens;
+    // t_lex_node *lex_head;//추후 원한다면 리팩토링
     int i = 0;
+    //tokenizing
     tokens = word_split(line, ' ');
-
     tokens = convert_env(tokens, envp_list);
-    tokens = trim_tokens(tokens);
+    tokens = divide_tokens(tokens);
+    tokens = trim_tokens(tokens);//순서 바꿈. "ls|env"와 ls|env의 구별이 불가능해서
     
-    //따옴표 제거해주는 함수. strtrim ', strtrim " 해주기
+    //lexicalization
+    //tokens[i] 돌면서 type value 나누고
+    //
+    //
+    //add lexical node(cur node, create lexical node)
+
+    //리스트화
+    /*
+        <  또는 문자 기준으로
+        뒤의 문자 타입 구분 할수 있음.
+        타입 구분 해야하면 
+        유효한지도 판정이 가능.
+        
+    */
+
+
     while (tokens[i] != 0)
 	{
 		printf("[%d] : [%s]\n", i, tokens[i]);
 		i++;
 	}
+
+
     arr_free(tokens);
     /*
         토큰별로 나누어주기
@@ -141,6 +145,3 @@ int main(int argc, char **argv, char **envp)
 
     return (0);
 }
-
-//  export LDFLAGS="-L/opt/homebrew/opt/readline/lib"
-//  export CPPFLAGS="-I/opt/homebrew/opt/readline/include"

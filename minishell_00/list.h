@@ -16,6 +16,22 @@ typedef struct s_list
     t_node *tail;
 }   t_list;
 
+//렉서
+//파서는 자료구조
+
+//
+//
+
+
+
+// struct general {
+//     t_list *envp_list;
+//     t_lexer *lexer_head; 
+// }
+//free.. 
+
+
+
 //list.c
 void init_list(t_list **list);
 void add_node(t_list *list, char *str);

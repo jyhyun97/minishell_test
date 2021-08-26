@@ -1,19 +1,20 @@
 NAME = minishell
 CC = gcc
 LDFLAGS = "-L/opt/homebrew/opt/readline/lib"
-CPPFLAGS="-I/opt/homebrew/opt/readline/include"
-SRCS = envp_convert.c\
-		envp_list.c\
+CPPFLAGS= "-I/opt/homebrew/opt/readline/include"
+SRCS = tokenizer_envp_convert.c\
+		tokenizer_envp_list.c\
+		tokenizer_parser.c\
+		tokenizer_trim.c\
+		tokenizer_divide.c\
 		list.c\
 		main.c\
-		parser.c\
-		signal.c\
-		util.c
+		signal.c
 
 OBJS = $(SRCS:.c=.o)
 
 $(NAME) : $(OBJS)
-	$(CC) -lreadline $(LDFLAGS) $(CPPFLAGS) -lft -L./libft -o $(NAME) $(OBJS) 
+	$(CC) -g -lreadline -lft -L./libft -o $(NAME) $(OBJS) 
 
 all: $(NAME)
 

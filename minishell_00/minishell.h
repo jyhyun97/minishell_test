@@ -21,8 +21,14 @@ void signal_initialize(void);
 int  split_key_value(char *str, char **key, char **value);
 void envp_list_initialize(char **envp, t_list **envp_list);
 
+//tokenizer_trim.c
+char **trim_tokens(char **tokens);
+
 //envp_convert.c
 char **convert_env(char **arr, t_list *envp_list);
+
+//tokenizer_divide
+char **divide_tokens(char **tokens);
 
 //util.c
 size_t ft_strlen(const char *s);
