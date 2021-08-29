@@ -1,186 +1,96 @@
 #include "minishell.h"
 
-#define RD_IN_SINGLE 0  //<
-#define RD_OUT_SINGLE 1 // >
-#define RD_IN_DOUBLE 2  // <<
-#define RD_OUT_DOUBLE 3 // >>
-#define PIPE 4
-#define CMD 5
-#define OPTION 6
-#define ARGUMENT 7
-#define RD_IN_SINGLE_ERR 100
-#define RD_OUT_SINGLE_ERR 101
-#define RD_IN_DOUBLE_ERR 102  // <<
-#define RD_OUT_DOUBLE_ERR 103 // >>
-#define PIPE_ERR 104
-#define NEW_LINE_ERR 105
+typedef struct s_parse_node{
+    char *cmd;
+    
+    t_lex_list *option;
+    t_lex_list *arg;
+    t_lex_list *redirection;
+    int pipe;  //파이프 존재시 next노드에 추가 , 굳이 필요 없을듯. 파이프 존재시 1, 미존재 0
+    struct s_parse_node *prev;
+    struct s_parse_node *next;
+} t_parse_node;
 
-typedef struct s_lex_node
+typedef struct s_parse_list
 {
-    int type; // 타입 종류는?
-    char *value;
-    // int error;
-    struct s_lex_node *prev;
-    struct s_lex_node *next;
-} t_lex_node;
+    t_parse_node *head;
+    t_parse_node *cur;
+    t_parse_node *tail;
+}   t_parse_list;
 
-
-typedef struct s_lex_list
+void    init_parse_list(t_parse_list **list)
 {
-    t_lex_node *head;
-    t_lex_node *cur;
-    t_lex_node *tail;
-}   t_lex_list;
-
-
-//렉서 관련 리스트 만들기
-
-//노드 따로 만들기 create node
-t_lex_node *create_lex_node(int type, char *value)
-{
-    t_lex_node *new_node;
-
-    new_node = malloc(sizeof(t_lex_node));
-    new_node->type = type;
-    new_node->value = value;
-    new_node->prev = NULL;
-    new_node->next = NULL;
-    return (new_node);
-}
-
-void init_lex_list(t_lex_list **list)
-{
-    *(list) = (t_lex_list *)malloc(sizeof(t_lex_list));
+    *(list) = (t_parse_list *)malloc(sizeof(t_parse_list));
     (*list)->cur = 0;
     (*list)->head = 0;
     (*list)->tail = 0;
 }
 
-void add_lex_node(t_lex_list *list, t_lex_node *lex_node)
+void    add_parse_node(t_parse_list *list, t_parse_node *parse_node)
 {
     if (list->head == 0 && list->tail == 0)
     {
-        list->head = lex_node;
-        list->tail = lex_node;
+        list->head = parse_node;
+        list->tail = parse_node;
     }
     else
     {
-        list->tail->next = lex_node;
-        lex_node->prev = list->tail;
-        list->tail = lex_node;
+        list->tail->next = parse_node;
+        parse_node->prev = list->tail;
+        list->tail = parse_node;
     }
 }
 
-void figure_token(char **tokens)
+t_parse_node *create_parse_node(t_lex_list *lex_list)
 {
+    t_parse_node *new_node;
+    new_node = malloc(sizeof(t_parse_node));
 
-}
+    init_lex_list(&new_node->option);
+    init_lex_list(&new_node->arg);
+    init_lex_list(&new_node->redirection);
 
-void Lexicalize_token(char **tokens, t_lex_list *lex_list)
-{
-    //리스트화
-    /*
-        <  또는 문자 기준으로
-        뒤의 문자 타입 구분 할수 있음.
-        타입 구분 해야하면 
-        유효한지도 판정이 가능.
-    */
-    //토큰 타입검사
-
-    int i = 0;
-    int flag = 0;
-    int type;
-
-    while (tokens[i] != 0)
+    while (lex_list->cur != 0 && lex_list->cur->type != PIPE)
     {
-        if (ft_strncmp(tokens[i], "<<", 2) == 0 || ft_strncmp(tokens[i], ">>", 2) == 0 ||
-            tokens[i][0] == '<' || tokens[i][0] == '>' || tokens[i][0] == '|')
-        {
-            printf("98tokens : %s\n", tokens[i]);
-            if (ft_strncmp(tokens[i], "<<", 2) == 0)
-                type = RD_IN_DOUBLE;
-            else if (ft_strncmp(tokens[i], ">>", 2) == 0)
-                type = RD_OUT_DOUBLE;
-            else if (tokens[i][0] == '<')
-                type = RD_IN_SINGLE;
-            else if (tokens[i][0] == '>')
-                type = RD_OUT_SINGLE;
-            else if (tokens[i][0] == '|')
-                type = PIPE;
-            i++;
-            if (tokens[i] == NULL || ft_strncmp(tokens[i], "<<", 2) == 0 || ft_strncmp(tokens[i], ">>", 2) == 0 ||
-            tokens[i][0] == '<' || tokens[i][0] == '>' || tokens[i][0] == '|' || tokens[0][0] == '|')
-            {
-                
-                if (tokens[i] == NULL)
-                {
-                    add_lex_node(lex_list, create_lex_node(NEW_LINE_ERR, "error"));
-                    //value = newline_error;
-                    break ;
-                }
-                //else if (ft_strncmp(tokens[i], "<<", 2) == 0)
-                    //value = RD_OUT_DOUBLE_ERR;
-                add_lex_node(lex_list, create_lex_node(type, "error"));
-
-                //printf("%d, %s\n", type, "error");//#define >>error <<error <eeror ...
-                /*
-                    신텍스 에러부분이기떄문에 
-                    value = ERROR 
-                */
-            }
-            else
-            {
-                if (type == PIPE)
-                {
-                    flag = 0;
-                    i--;
-                }
-                add_lex_node(lex_list, create_lex_node(type, tokens[i]));
-                i++;
-                //printf("%d, %s\n", type, tokens[i]);
-            }
-        }
-        else
-        {
-            if (flag == 0)
-            {
-                type = CMD;
-                flag = 1;
-            }
-            else if (flag == 1)
-            {
-                if (tokens[i][0] == '-')
-                    type = OPTION;
-                else
-                    type = ARGUMENT;
-            }
-            add_lex_node(lex_list, create_lex_node(type, tokens[i]));
-            // printf("%d, %s\n", type, tokens[i]);
-            i++;
-        }
+        if (lex_list->cur->type == CMD)
+            new_node->cmd = ft_strdup(lex_list->cur->value);
+        else if (lex_list->cur->type == OPTION)
+            add_lex_node(new_node->option, create_lex_node(lex_list->cur->type, ft_strdup(lex_list->cur->value)));
+        else if (lex_list->cur->type >= 0 && lex_list->cur->type <= 3)
+            add_lex_node(new_node->redirection, create_lex_node(lex_list->cur->type, ft_strdup(lex_list->cur->value)));
+        else if (lex_list->cur->type == ARGUMENT)
+            add_lex_node(new_node->arg, create_lex_node(lex_list->cur->type, ft_strdup(lex_list->cur->value)));
+        new_node->pipe = 0;
+        lex_list->cur = lex_list->cur->next;
+        if (lex_list->cur == 0)
+            break;
     }
+    // if (lex_list->cur->type == PIPE)
+    //     new_node->pipe = 1;
+    return (new_node);
+}
+
+void parse_lexer(t_parse_list *parse_list, t_lex_list *lex_list)
+{
     lex_list->cur = lex_list->head;
     while (lex_list->cur != 0)
     {
-        printf("type : %d, value : %s\n", lex_list->cur->type, lex_list->cur->value);
-        lex_list->cur = lex_list->cur->next;
+        add_parse_node(parse_list, create_parse_node(lex_list));
+        if (lex_list->cur != 0)
+            lex_list->cur = lex_list->cur->next;
     }
 }
-
-//[리다이렉션s][명령어][리다이렉션s][옵션s][argus][리다이렉션s][파이프]
-//리다이렉션 = <,<<,>>,> type. 뒤에 <>|으로 시작하지 않는 문자열 type: < value : 파일이름
-//명령어 = 리다이렉션 제외하고 첫번째로 나오는 문자열
-//옵션 = 맨 앞에 -으로 시작하는 문자열
-//인자 = 명령어, [옵션] 다음에 나오는 문자열
-//파이프 = type : pipe, value : |
 
 void parse_line(char *line, t_list *envp_list)
 {
     char **tokens;
-    // t_lex_node *lex_head;//추후 원한다면 리팩토링
     int i = 0;
+    t_lex_list *lex_list;
+    t_parse_list *parse_list;
+    
     //tokenizing
-    tokens = word_split(line, ' ');
+    line = ft_strtrim(line, " ");
+    tokens = word_split(line, ' ');//"> " ">"
     tokens = convert_env(tokens, envp_list);
     tokens = divide_tokens(tokens);
     tokens = trim_tokens(tokens); //순서 바꿈. "ls|env"와 ls|env의 구별이 불가능해서
@@ -189,10 +99,25 @@ void parse_line(char *line, t_list *envp_list)
         printf("[%d] : [%s]\n", i, tokens[i]);
         i++;
     }
-    t_lex_list *lex_list;
+    //lexicalizing
     init_lex_list(&lex_list);
     Lexicalize_token(tokens, lex_list);
+    
+    //parsing
+    init_parse_list(&parse_list);
+    parse_lexer(parse_list, lex_list);
 
+    parse_list->cur = parse_list->head;
+    while (parse_list->cur != 0)
+    {
+        // while(parse_list->cur->)
+        // {
+
+        // }
+        printf("%s\n", parse_list->cur->cmd);
+
+        parse_list->cur = parse_list->cur->next;
+    }//qwe asd zxc qwe 여러번 반복 시 segfalut 발생
     arr_free(tokens);
     /*
         토큰별로 나누어주기

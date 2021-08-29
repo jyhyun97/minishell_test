@@ -70,7 +70,7 @@ char **divide_tokens(char **tokens)
         }
         i++;
     }
-    new_arr[k] = 0;
+    new_arr[k] =0;
     free(tokens);
     return (new_arr);
 }

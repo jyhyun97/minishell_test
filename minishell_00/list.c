@@ -59,3 +59,4 @@ int count_node(t_list *list)
     }
     return (num);
 }
+

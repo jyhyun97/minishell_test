@@ -16,6 +16,24 @@ typedef struct s_list
     t_node *tail;
 }   t_list;
 
+typedef struct s_lex_node
+{
+    int type; // 타입 종류는?
+    char *value;
+    // int error;
+    struct s_lex_node *prev;
+    struct s_lex_node *next;
+} t_lex_node;
+
+
+typedef struct s_lex_list
+{
+    t_lex_node *head;
+    t_lex_node *cur;
+    t_lex_node *tail;
+}   t_lex_list;
+
+
 //렉서
 //파서는 자료구조
 

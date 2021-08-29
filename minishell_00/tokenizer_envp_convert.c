@@ -72,7 +72,7 @@ char **convert_env(char **arr, t_list *envp_list)
 
     int i = 0;
     int j = 0;
-    char *tmp;
+    char *tmp; 
     while (arr[i] != 0)
     {
         j = 0;
