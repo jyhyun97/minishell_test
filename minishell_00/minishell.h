@@ -61,4 +61,11 @@ char *ft_strdup(const char *s1);
 int skip_quotes(char const *s, char q);
 char	**word_split(char const *s, char c);
 char	**arr_free(char **arr);
+
+//parser.c
+void    init_parse_list(t_parse_list **list);
+void    add_parse_node(t_parse_list *list, t_parse_node *parse_node);
+t_parse_node *create_parse_node(t_lex_list *lex_list);
+void parse_lexer(t_parse_list *parse_list, t_lex_list *lex_list);
+
 #endif

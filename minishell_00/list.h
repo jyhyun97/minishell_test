@@ -34,6 +34,24 @@ typedef struct s_lex_list
 }   t_lex_list;
 
 
+typedef struct s_parse_node{
+    char *cmd;
+    t_lex_list *option;
+    t_lex_list *arg;
+    t_lex_list *redirection;
+    int pipefd[2];  //파이프 존재시 next노드에 추가 , 굳이 필요 없을듯. 파이프 존재시 1, 미존재 0
+    int index;
+    struct s_parse_node *prev;
+    struct s_parse_node *next;
+} t_parse_node;
+
+typedef struct s_parse_list
+{
+    t_parse_node *head;
+    t_parse_node *cur;
+    t_parse_node *tail;
+}   t_parse_list;
+
 //렉서
 //파서는 자료구조
 

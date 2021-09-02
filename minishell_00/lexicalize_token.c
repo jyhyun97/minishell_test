@@ -115,4 +115,3 @@ void Lexicalize_token(char **tokens, t_lex_list *lex_list)
         }
     }
 }
-
