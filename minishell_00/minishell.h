@@ -68,4 +68,10 @@ void    add_parse_node(t_parse_list *list, t_parse_node *parse_node);
 t_parse_node *create_parse_node(t_lex_list *lex_list);
 void parse_lexer(t_parse_list *parse_list, t_lex_list *lex_list);
 
+//execution_util.c
+int count_lex_node(t_lex_list *lex_list);
+char **make_argv(t_parse_node *parse_node, t_list *envp_list);
+int is_builtin(char *cmd);
+char *make_path(char *cmd, t_list *envp_list);
+
 #endif

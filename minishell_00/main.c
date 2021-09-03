@@ -4,102 +4,12 @@
     //1. cmd가 빌트인인지 확인하는 함수 int 0 1 완성!
     //2. cmd path 찾아주는 함수 char * 완성!
     //3. 옵션, 인자 2차원 배열로 만드는 함수 char ** 완성!
-    
-int count_lex_node(t_lex_list *lex_list)
+
+void    connect_pipe(int pipefd[2], int io)
 {
-    int num;
-
-    num = 0;
-    lex_list->cur = lex_list->head;
-    while (lex_list->cur != 0)
-    {
-        lex_list->cur = lex_list->cur->next;
-        num++;
-    }
-    return (num);
-}
-
-char **make_argv(t_parse_node *parse_node, t_list *envp_list)
-{
-    char **new_argv;
-    int cnt_all_node;
-    int i;
-
-    cnt_all_node = count_lex_node(parse_node->option) + count_lex_node(parse_node->arg);
-    new_argv = (char **)malloc(sizeof(char *) * (cnt_all_node + 2));
-    i = 0;
-    parse_node->option->cur = parse_node->option->head;
-    new_argv[i] = parse_node->cmd; //cmd , minishell 파일이름..
-    i++;
-    while (parse_node->option->cur != 0)
-    {
-        new_argv[i] = parse_node->option->cur->value;
-        parse_node->option->cur = parse_node->option->cur->next;
-        i++;
-    }
-    parse_node->arg->cur = parse_node->arg->head;
-    while (parse_node->arg->cur != 0)
-    {
-        new_argv[i] = parse_node->arg->cur->value;
-        parse_node->arg->cur = parse_node->arg->cur->next;
-        i++;
-    }
-    new_argv[i] = 0;
-
-    //test 나중에 필히 삭제!!!!
-    i = 0;
-    while (new_argv[i] != 0)
-    {
-        printf("new_argv : %s\n", new_argv[i]);
-        i++;
-    }
-
-    return (new_argv);
-}
-
-int is_builtin(char *cmd)
-{
-    if (ft_strncmp(cmd, "cd", 2) == 0 || ft_strncmp(cmd, "echo", 4) == 0 ||
-        ft_strncmp(cmd, "export", 6) == 0 || ft_strncmp(cmd, "unset", 5) == 0 ||
-        ft_strncmp(cmd, "env", 3) == 0 || ft_strncmp(cmd, "pwd", 3) == 0 ||
-        ft_strncmp(cmd, "pwd", 3) == 0)
-        return (0);//빌트인
-    else
-        return (1);//빌트인 아님
-}
-
-char *make_path(char *cmd, t_list *envp_list)
-{
-    char **bins;
-    char *new_path;
-    char *tmp;
-    int i;
-
-    envp_list->cur = envp_list->head;
-    while (envp_list->cur != 0)
-    {
-        if (ft_strncmp(envp_list->cur->key, "PATH", 4) == 0)
-            break;
-        envp_list->cur = envp_list->cur->next;
-    }
-    if (envp_list->cur == 0)
-        return (0);
-    bins = ft_split(envp_list->cur->value, ':');
-    i = 0;
-    while (bins[i] != 0)
-    {
-        tmp = ft_strjoin(bins[i], "/");
-        new_path = ft_strjoin(tmp, cmd);
-        free(tmp);
-        if (access(new_path, R_OK) != -1)
-        {
-            arr_free(bins);
-            return (new_path);
-        }
-        i++;
-    }
-    arr_free(bins);
-    return (0);
+    dup2(pipefd[io], io);
+    close(pipefd[0]);
+    close(pipefd[1]);
 }
 
 void multi_pipe(t_parse_list *parse_list, t_list *envp_list)
@@ -110,7 +20,7 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list)
     int status;
     length = 0;
     pid = 0;
-
+    
     parse_list->cur = parse_list->head;
     while (parse_list->cur != 0)
     {
@@ -123,17 +33,44 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list)
     parse_list->cur = parse_list->tail;
     while (parse_list->cur != 0 && pid == 0) // 자식 프로세스 pid == 0
     {
-        pipe(parse_list->cur->pipefd); //fd == 0 출구 fd == 1 입구,
+        pipe(parse_list->cur->pipefd); //fd == 0 출구 fd == 1 입구, [1][2 o][3 o] 
         pid = fork();
-        wait(&status);
         if (pid == 0)
             parse_list->cur = parse_list->cur->prev;
     }
-        printf("pid : %d  index: %d \n", pid, parse_list->cur->index);
-    exit(0);
+    printf("pid : %d  index: %d \n", pid, parse_list->cur->index);
+    
+    if (parse_list->cur->index == 0)
+    {
+        printf("45 first : %d\n", parse_list->cur->index);
+        if (parse_list->cur->next == 0)
+            execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
+        else
+        {
+            connect_pipe(parse_list->cur->next->pipefd, STDOUT_FILENO);
+            execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);        
+        }
+    }
+    else if (parse_list->cur->next != 0)
+    {
+        wait(&status);
+        printf("56 middle : %d\n", parse_list->cur->index);
+        connect_pipe(parse_list->cur->pipefd, STDIN_FILENO);
+        connect_pipe(parse_list->cur->next->pipefd, STDOUT_FILENO);
+        execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
+    }
+    else
+    {
+        wait(&status);
+        printf("63 last : %d \n", parse_list->cur->index);
+        connect_pipe(parse_list->cur->pipefd, STDIN_FILENO);
+        execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
+    }
 
-    // execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
-
+    //index로 처음중간 끝 구분
+    
+    // if (pid == 0)
+        // exit(0);
 }
 
 void    execute_line(t_parse_list *parse_list, t_list *envp_list)
@@ -168,7 +105,8 @@ void    execute_line(t_parse_list *parse_list, t_list *envp_list)
 
     int i = 0; 
     int length = 0;
-
+    int pid;
+    int status;
 //cd ../../minishell
 //chdir("../../minishell");
 //PWD = getcwd(매개변수)
@@ -185,13 +123,16 @@ void    execute_line(t_parse_list *parse_list, t_list *envp_list)
     {
         //메인에서 실행, return으로 끝
         printf("length 1 and builtin true\n");
-        //execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
-
     }
     else
     {
+        pid = fork();
         printf("many\n");
-        multi_pipe(parse_list, envp_list);
+        if (pid == 0)
+            multi_pipe(parse_list, envp_list);
+        else
+            wait(&status);
+        
         // execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
         //자식프로세스 함수(테스트 프로그램 만들어 둔 것 응용)
         // 자식프로세스에서 실행(파이프 연결)
