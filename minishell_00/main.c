@@ -30,12 +30,11 @@ int		redirection_double_out(char *file)
 	return (0);
 }
 
-int     redirection_heredoc(char *delimiter)
+void    make_heredoc(char *delimiter)
 {
     char *line;
-    char *backup;
-    char *tmp;
     int fd;
+
 
 	fd = open("heredoc_tmp", O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
     while (1)
@@ -48,9 +47,39 @@ int     redirection_heredoc(char *delimiter)
         free(line);
     }
     close(fd);
+}
+
+int     redirection_heredoc(char *delimiter)
+{
+    //char *line;
+    // int fd;
+
+
+	// fd = open("heredoc_tmp", O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+    // while (1)
+    // {
+    //     line = readline("> ");
+    //     if (ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
+    //         break;
+    //     write(fd, line, ft_strlen(line));
+    //     write(fd, "\n", 1);
+    //     free(line);
+    // }
+    // close(fd);
     redirection_in("heredoc_tmp");
     unlink("heredoc_tmp");
     return (0);
+}
+
+void config_heredoc(t_lex_list *redirection_list)
+{
+    redirection_list->cur = redirection_list->head;
+    while(redirection_list->cur != NULL)
+    {
+        if (redirection_list->cur->type == RD_IN_DOUBLE)
+            make_heredoc(redirection_list->cur->value);
+        redirection_list->cur = redirection_list->cur->next;
+    }
 }
 
 void    config_redirection(t_lex_list *redirection_list)
@@ -122,11 +151,13 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list)
     {
         if (parse_list->cur->next == 0)
         {
+            config_heredoc(parse_list->cur->redirection);
             config_redirection(parse_list->cur->redirection);
             execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
         }
         else
         {
+            config_heredoc(parse_list->cur->redirection);
             connect_pipe(parse_list->cur->next->pipefd, STDOUT_FILENO);
             config_redirection(parse_list->cur->redirection);
             execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);        
@@ -136,8 +167,10 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list)
     {
         wait(&status);
 
-        if (is_heredoc(parse_list->cur->redirection) == 0)
+        if (is_heredoc(parse_list->cur->redirection) == 0)//heredoc 없
             connect_pipe(parse_list->cur->pipefd, STDIN_FILENO);//if (rd_list has heredoc)
+        else//heredoc 있
+            config_heredoc(parse_list->cur->redirection);
         connect_pipe(parse_list->cur->next->pipefd, STDOUT_FILENO);
         config_redirection(parse_list->cur->redirection);
         execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
@@ -147,6 +180,8 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list)
         wait(&status);
         if (is_heredoc(parse_list->cur->redirection) == 0)
             connect_pipe(parse_list->cur->pipefd, STDIN_FILENO);//if (rd_list has heredoc)
+        else
+            config_heredoc(parse_list->cur->redirection);
         config_redirection(parse_list->cur->redirection);
         execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
     }
@@ -297,8 +332,8 @@ int main(int argc, char **argv, char **envp)
         execute_line(parse_list, envp_list);
         //프리
         free(line);
-        //rl_redisplay();
-        //rl_replace_line("\n", 0);
+        // rl_redisplay();
+        // rl_replace_line("\n", 0);
     }
     //reset_input_mode();
 
