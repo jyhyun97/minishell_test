@@ -1,9 +1,78 @@
 #include "minishell.h"
 
-    //필요 함수
-    //1. cmd가 빌트인인지 확인하는 함수 int 0 1 완성!
-    //2. cmd path 찾아주는 함수 char * 완성!
-    //3. 옵션, 인자 2차원 배열로 만드는 함수 char ** 완성!
+int		redirection_in(char *file)
+{
+	int fd;
+
+	fd = open(file, O_RDONLY);
+	dup2(fd, STDIN_FILENO);
+	close(fd);
+	return (0);
+}
+
+int		redirection_out(char *file)
+{
+	int fd;
+
+	fd = open(file, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+	dup2(fd, STDOUT_FILENO);
+	close(fd);
+	return (0);
+}
+
+int		redirection_double_out(char *file)
+{
+	int fd;
+
+	fd = open(file, O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
+	dup2(fd, STDOUT_FILENO);
+	close(fd);
+	return (0);
+}
+
+int     redirection_heredoc(char *delimiter)
+{
+    char *line;
+    char *backup;
+    char *tmp;
+    backup = ft_strdup("");
+    
+    line = readline("> ");
+    while (ft_strncmp(line, delimiter, ft_strlen(line)) != 0)
+    {
+        tmp = ft_strjoin(backup, line);
+        free(backup);
+        backup = ft_strjoin(tmp, "\n");
+        free(tmp);
+        free(line);
+        line = readline("> ");
+    }//거꾸로 짜는 게 포인트
+    free(line);
+    int fd;
+	fd = open("heredoc_tmp", O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+    write(fd, backup, ft_strlen(backup));
+    close(fd);
+    redirection_in("heredoc_tmp");
+    unlink("heredoc_tmp");
+    return (0);
+}
+
+void    config_redirection(t_lex_list *redirection_list)
+{
+    redirection_list->cur = redirection_list->head;
+    while(redirection_list->cur != NULL)
+    {
+        if (redirection_list->cur->type == RD_IN_SINGLE)
+            redirection_in(redirection_list->cur->value);
+        else if (redirection_list->cur->type == RD_OUT_SINGLE)
+            redirection_out(redirection_list->cur->value);
+        else if (redirection_list->cur->type == RD_IN_DOUBLE)
+            redirection_heredoc(redirection_list->cur->value);
+        else if (redirection_list->cur->type == RD_OUT_DOUBLE)
+            redirection_double_out(redirection_list->cur->value);
+        redirection_list->cur = redirection_list->cur->next;
+    }
+}
 
 void    connect_pipe(int pipefd[2], int io)
 {
@@ -12,58 +81,77 @@ void    connect_pipe(int pipefd[2], int io)
     close(pipefd[1]);
 }
 
+int is_heredoc(t_lex_list *redirection_list)
+{
+    int rtn;
+
+    rtn = 0;
+    redirection_list->cur = redirection_list->head;
+    while(redirection_list->cur != NULL)
+    {
+        if (redirection_list->cur->type == RD_IN_DOUBLE)
+        {
+             rtn = 1;
+             return rtn;
+        }
+        redirection_list->cur = redirection_list->cur->next;
+    }
+    return rtn;
+}
+
 void multi_pipe(t_parse_list *parse_list, t_list *envp_list)
 {
     int length;
     int pid;
     int i = 0;
     int status;
+
     length = 0;
     pid = 0;
-    
     parse_list->cur = parse_list->head;
     while (parse_list->cur != 0)
     {
         length++;
         parse_list->cur = parse_list->cur->next;
     }
-    //원한는 index 노드에 점근할수 있어야함.
-    //마지막 부터 fork해주어야 함.
-    //
     parse_list->cur = parse_list->tail;
-    while (parse_list->cur != 0 && pid == 0) // 자식 프로세스 pid == 0
+    while (parse_list->cur != 0 && pid == 0)
     {
-        pipe(parse_list->cur->pipefd); //fd == 0 출구 fd == 1 입구, [1][2 o][3 o] 
+        pipe(parse_list->cur->pipefd);
         pid = fork();
         if (pid == 0)
             parse_list->cur = parse_list->cur->prev;
     }
-    printf("pid : %d  index: %d \n", pid, parse_list->cur->index);
-    
     if (parse_list->cur->index == 0)
     {
-        printf("45 first : %d\n", parse_list->cur->index);
         if (parse_list->cur->next == 0)
+        {
+            config_redirection(parse_list->cur->redirection);
             execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
+        }
         else
         {
             connect_pipe(parse_list->cur->next->pipefd, STDOUT_FILENO);
+            config_redirection(parse_list->cur->redirection);
             execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);        
         }
     }
     else if (parse_list->cur->next != 0)
     {
         wait(&status);
-        printf("56 middle : %d\n", parse_list->cur->index);
-        connect_pipe(parse_list->cur->pipefd, STDIN_FILENO);
+
+        if (is_heredoc(parse_list->cur->redirection) == 0)
+            connect_pipe(parse_list->cur->pipefd, STDIN_FILENO);//if (rd_list has heredoc)
         connect_pipe(parse_list->cur->next->pipefd, STDOUT_FILENO);
+        config_redirection(parse_list->cur->redirection);
         execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
     }
     else
     {
         wait(&status);
-        printf("63 last : %d \n", parse_list->cur->index);
-        connect_pipe(parse_list->cur->pipefd, STDIN_FILENO);
+        if (is_heredoc(parse_list->cur->redirection) == 0)
+            connect_pipe(parse_list->cur->pipefd, STDIN_FILENO);//if (rd_list has heredoc)
+        config_redirection(parse_list->cur->redirection);
         execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
     }
 
@@ -107,10 +195,10 @@ void    execute_line(t_parse_list *parse_list, t_list *envp_list)
     int length = 0;
     int pid;
     int status;
-//cd ../../minishell
-//chdir("../../minishell");
-//PWD = getcwd(매개변수)
-//getcwd
+    //cd ../../minishell
+    //chdir("../../minishell");
+    //PWD = getcwd(매개변수)
+    //getcwd
     //파이프 개수 확인.
     parse_list->cur = parse_list->head;
     while (parse_list->cur != 0)
@@ -127,7 +215,7 @@ void    execute_line(t_parse_list *parse_list, t_list *envp_list)
     else
     {
         pid = fork();
-        printf("many\n");
+        // printf("many\n");
         if (pid == 0)
             multi_pipe(parse_list, envp_list);
         else
@@ -141,7 +229,6 @@ void    execute_line(t_parse_list *parse_list, t_list *envp_list)
         //     else (execve)
         //         execve 끝
     }
-
 }
 
 
@@ -162,7 +249,7 @@ t_parse_list *parse_line(char *line, t_list *envp_list)
     tokens = trim_tokens(tokens); //순서 바꿈. "ls|env"와 ls|env의 구별이 불가능해서
     while (tokens[i] != 0)
     {
-        printf("[%d] : [%s]\n", i, tokens[i]);
+        // printf("[%d] : [%s]\n", i, tokens[i]);
         i++;
     }
     //lexicalizing
@@ -176,7 +263,7 @@ t_parse_list *parse_line(char *line, t_list *envp_list)
     parse_list->cur = parse_list->head;
     while (parse_list->cur != 0)
     {
-        printf("%s, %d\n", parse_list->cur->cmd, parse_list->cur->index);
+        // printf("%s, %d\n", parse_list->cur->cmd, parse_list->cur->index);
         parse_list->cur = parse_list->cur->next;
     }//qwe asd zxc qwe 여러번 반복 시 segfalut 발생
     return (parse_list);
@@ -214,7 +301,7 @@ int main(int argc, char **argv, char **envp)
         execute_line(parse_list, envp_list);
         //프리
         free(line);
-        rl_redisplay();
+        //rl_redisplay();
         //rl_replace_line("\n", 0);
     }
     //reset_input_mode();

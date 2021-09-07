@@ -9,6 +9,7 @@ void    connect_pipe(int pipefd[2], int io)
     close(pipefd[1]);
 }
 //gcc *.c -lft -L../libft
+//gcc *.c -lreadline -lft -L./libft
 int main(int argc, char **argv)
 {
     char **new_argv = ft_split("ls -l", ' ');

@@ -41,14 +41,6 @@ char **make_argv(t_parse_node *parse_node, t_list *envp_list)
     }
     new_argv[i] = 0;
 
-    //test 나중에 필히 삭제!!!!
-    i = 0;
-    while (new_argv[i] != 0)
-    {
-        printf("new_argv : %s\n", new_argv[i]);
-        i++;
-    }
-
     return (new_argv);
 }
 
