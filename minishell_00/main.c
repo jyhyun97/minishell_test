@@ -43,7 +43,7 @@ void    make_heredoc(char *delimiter)
         if (ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
             break;
         write(fd, line, ft_strlen(line));
-        write(fd, "\n", 1);
+        write(fd, "\n", 1); 
         free(line);
     }
     close(fd);
