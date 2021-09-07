@@ -35,22 +35,18 @@ int     redirection_heredoc(char *delimiter)
     char *line;
     char *backup;
     char *tmp;
-    backup = ft_strdup("");
-    
-    line = readline("> ");
-    while (ft_strncmp(line, delimiter, ft_strlen(line)) != 0)
-    {
-        tmp = ft_strjoin(backup, line);
-        free(backup);
-        backup = ft_strjoin(tmp, "\n");
-        free(tmp);
-        free(line);
-        line = readline("> ");
-    }//거꾸로 짜는 게 포인트
-    free(line);
     int fd;
+
 	fd = open("heredoc_tmp", O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
-    write(fd, backup, ft_strlen(backup));
+    while (1)
+    {
+        line = readline("> ");
+        if (ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
+            break;
+        write(fd, line, ft_strlen(line));
+        write(fd, "\n", 1);
+        free(line);
+    }
     close(fd);
     redirection_in("heredoc_tmp");
     unlink("heredoc_tmp");
