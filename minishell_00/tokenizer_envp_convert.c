@@ -34,9 +34,9 @@ char *new_arr_str(char *arr_str, char *envp_key, t_list *envp_list)
 {
     char *new_str;
     char *envp_value = get_env(envp_key, envp_list);
-    int i = 0;//arr_str
-    int j = 0;//new_str
-    int k = 0;//envp_value
+    int i = 0;
+    int j = 0;
+    int k = 0;
 
     new_str = (char *)malloc(sizeof(char) * ((int)ft_strlen(arr_str) + (int)ft_strlen(envp_value) + 4));
     while (arr_str[i] != '$' && arr_str[i] != '\0')

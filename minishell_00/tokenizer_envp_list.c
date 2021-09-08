@@ -36,10 +36,48 @@ void envp_list_initialize(char **envp, t_list **envp_list)
         add_node(*envp_list, envp[i]);
         i++;
     }
-    (*envp_list)->cur = (*envp_list)->head;   
-    // while(envp_list->cur != 0)
-    // {
-    //     printf("key : %s, value : %s\n", envp_list->cur->key, envp_list->cur->value);
-    //     envp_list->cur = envp_list->cur->next;
-    // }
+    (*envp_list)->cur = (*envp_list)->head;
+}
+
+void init_list(t_list **list)
+{
+    *(list) = (t_list *)malloc(sizeof(t_list));
+    (*list)->cur = 0;
+    (*list)->head = 0;
+    (*list)->tail = 0;
+}
+
+void add_node(t_list *list, char *str)
+{
+    t_node *node;
+
+    node = (t_node *)malloc(sizeof(t_node));
+    split_key_value(str, &node->key, &node->value);
+    node->prev = 0;
+    node->next = 0;
+    if (list->head == 0 && list->tail == 0)
+    {
+        list->head = node;
+        list->tail = node;
+    }
+    else
+    {
+        list->tail->next = node;
+        node->prev = list->tail;
+        list->tail = node;
+    }
+}
+
+void delete_list(t_list **list)
+{
+    t_node *tmp;
+
+    (*list)->cur = (*list)->head;
+    while ((*list)->cur != 0)
+    {
+        tmp = (*list)->cur->next;
+        free((*list)->cur);
+        (*list)->cur = tmp;
+    }
+    free(*list);
 }

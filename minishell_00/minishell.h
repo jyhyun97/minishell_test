@@ -11,9 +11,7 @@
 // #include "include/readline/readline.h"
 // #include "include/readline/history.h"
 #include "libft/libft.h"
-
-#include "list.h"
-
+#include "struct.h"
 
 #define RD_IN_SINGLE 0  //<
 #define RD_OUT_SINGLE 1 // >
@@ -34,9 +32,12 @@
 void sig_int(int sig_number);
 void signal_initialize(void);
 
-//envp_list.c
+//tokenizer_envp_list.c
 int  split_key_value(char *str, char **key, char **value);
 void envp_list_initialize(char **envp, t_list **envp_list);
+void init_list(t_list **list);
+void add_node(t_list *list, char *str);
+void delete_list(t_list **list);
 
 //tokenizer_trim.c
 char **trim_tokens(char **tokens);
@@ -74,5 +75,21 @@ int count_lex_node(t_lex_list *lex_list);
 char **make_argv(t_parse_node *parse_node, t_list *envp_list);
 int is_builtin(char *cmd);
 char *make_path(char *cmd, t_list *envp_list);
+
+//execution_run.c
+void config_heredoc(t_lex_list *redirection_list);
+void    config_redirection(t_lex_list *redirection_list);
+void    connect_pipe(int pipefd[2], int io);
+int is_heredoc(t_lex_list *redirection_list);
+void multi_pipe(t_parse_list *parse_list, t_list *envp_list);
+void    execute_line(t_parse_list *parse_list, t_list *envp_list);
+
+
+//redirection.c
+int		redirection_in(char *file);
+int		redirection_out(char *file);
+int		redirection_double_out(char *file);
+void    make_heredoc(char *delimiter);
+int     redirection_heredoc(char *delimiter);
 
 #endif

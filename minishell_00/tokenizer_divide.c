@@ -42,7 +42,7 @@ char **divide_tokens(char **tokens)
     int k = 0;
     int start = 0;
 
-    new_arr = (char **)malloc(sizeof(char *) * (count_tokens(tokens) + 1));//전체 토큰 개수 세서 할당.
+    new_arr = (char **)malloc(sizeof(char *) * (count_tokens(tokens) + 1));
     while (tokens[i] != 0)
     {
         j = 0;

@@ -8,7 +8,6 @@ SRCS = tokenizer_envp_convert.c\
 		tokenizer_trim.c\
 		tokenizer_divide.c\
 		lexicalize_token.c\
-		list.c\
 		main.c\
 		signal.c
 
