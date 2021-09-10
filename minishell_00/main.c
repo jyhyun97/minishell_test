@@ -13,6 +13,7 @@ void delete_lex_list(t_lex_list **lex_list)
         (*lex_list)->cur = tmp;
     }
     free(*lex_list);
+    *lex_list = NULL;
 }
 
 void delete_parse_list(t_parse_list **parse_list)
@@ -25,7 +26,10 @@ void delete_parse_list(t_parse_list **parse_list)
     {
         i++;
         if ((*parse_list)->cur->cmd != 0)
+        {
             free((*parse_list)->cur->cmd);
+            (*parse_list)->cur->cmd = NULL;
+        }
         if ((*parse_list)->cur->option != 0)
             delete_lex_list(&(*parse_list)->cur->option);
         if ((*parse_list)->cur->arg != 0)
@@ -34,10 +38,13 @@ void delete_parse_list(t_parse_list **parse_list)
             delete_lex_list(&(*parse_list)->cur->redirection);
         tmp = (*parse_list)->cur->next;
         free((*parse_list)->cur);
+        ((*parse_list)->cur) = NULL;
         (*parse_list)->cur = tmp;
     }
-    printf("39 %d\n");
     free(*parse_list);
+    (*parse_list) = NULL;
+
+
 }
 
 t_parse_list *parse_line(char *line, t_list *envp_list)
@@ -52,12 +59,12 @@ t_parse_list *parse_line(char *line, t_list *envp_list)
     if (line == 0)
         return (0);
     trimed_line = ft_strtrim(line, " ");  //???문제 있어요.
-    printf("52 %d\n", ft_strlen(line));
     free(line);
     tokens = word_split(trimed_line, ' ');
+    free(trimed_line);
     tokens = convert_env(tokens, envp_list);
-    tokens = divide_tokens(tokens);
-    tokens = trim_tokens(tokens);
+    tokens = divide_tokens(tokens); //???
+    tokens = trim_tokens(tokens); // ???
     while (tokens[i] != 0)
     {
         printf("[%d] : [%s]\n", i, tokens[i]);
@@ -66,8 +73,20 @@ t_parse_list *parse_line(char *line, t_list *envp_list)
     //lexicalizing
     init_lex_list(&lex_list);
     Lexicalize_token(tokens, lex_list);
+    //if syntax error check == error
+    //{
+        //arr_free(tokens) //delete_lex_list
+        //return (0);
+    //}
     //---token_free---
     arr_free(tokens);
+
+    lex_list->cur = lex_list->head;
+    while (lex_list->cur != 0)
+    {
+        printf("type %d, value %s\n", lex_list->cur->type, lex_list->cur->value);
+        lex_list->cur = lex_list->cur->next;
+    }
 
     //parsing
     init_parse_list(&parse_list);
@@ -104,13 +123,13 @@ int main(int argc, char **argv, char **envp)
             add_history(line);
         parse_list = parse_line(line, envp_list);
         //실행부
-        // execute_line(parse_list, envp_list);
+        execute_line(parse_list, envp_list);
         //프리
         delete_parse_list(&parse_list);
         // rl_redisplay();
         // rl_replace_line("\n", 0);
     }
     //reset_input_mode();
-
+    delete_list(&envp_list);
     return (0);
 }
