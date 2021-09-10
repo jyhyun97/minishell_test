@@ -89,7 +89,13 @@ void Lexicalize_token(char **tokens, t_lex_list *lex_list)
         {
             type = PIPE;
             i++;
-            if ( tokens[i][0] == '|' || tokens[0][0] == '|')
+            if (tokens[i] == NULL)
+            {
+                printf("Lexicalize_token 94 \n");
+                add_lex_node(lex_list, create_lex_node(PIPE_ERR, "| error")); //문구 수정필요...
+                return;
+            }
+            else if ( tokens[i][0] == '|' || tokens[0][0] == '|') //EXC_BAD_ACCESS (code=1, address=0x0)
                 add_lex_node(lex_list, create_lex_node(PIPE_ERR, tokens[i]));
             else
                 add_lex_node(lex_list, create_lex_node(type, tokens[i]));

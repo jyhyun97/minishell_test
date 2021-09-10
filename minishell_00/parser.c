@@ -27,11 +27,13 @@ t_parse_node *create_parse_node(t_lex_list *lex_list)
 {
     t_parse_node *new_node;
     new_node = malloc(sizeof(t_parse_node));
-
     init_lex_list(&new_node->option);
     init_lex_list(&new_node->arg);
     init_lex_list(&new_node->redirection);
 
+    new_node->prev = 0;
+    new_node->next = 0;
+    
     while (lex_list->cur != 0 && lex_list->cur->type != PIPE)
     {
         if (lex_list->cur->type == CMD)
