@@ -3,9 +3,11 @@
 int		redirection_in(char *file)
 {
 	int fd;
-
+	//int fd2;
 	fd = open(file, O_RDONLY);
+	//fd2=dup(STDIN_FILENO);
 	dup2(fd, STDIN_FILENO);
+	//dup2(STDIN_FILENO, fd2);
 	close(fd);
 	return (0);
 }
@@ -13,10 +15,15 @@ int		redirection_in(char *file)
 int		redirection_out(char *file)
 {
 	int fd;
+	//int fd2;
 
 	fd = open(file, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+	//fd2=dup(STDOUT_FILENO);
 	dup2(fd, STDOUT_FILENO);
+	//dup2(STDOUT_FILENO, fd2);
 	close(fd);
+	//close(fd2);
+
 	return (0);
 }
 

@@ -46,7 +46,6 @@ char **make_argv(t_parse_node *parse_node, t_list *envp_list)
 
 int is_builtin(char *cmd)
 {
-    
     if (cmd == NULL)
         return (0);
     if (ft_strncmp(cmd, "cd", 2) == 0 || ft_strncmp(cmd, "echo", 4) == 0 ||

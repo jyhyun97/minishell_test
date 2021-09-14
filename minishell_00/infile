@@ -1,1 +1,51 @@
-ababb
+length 1 and builtin true
+minishell$ asegaefa
+[0] : [asegaefa]
+type 5, value asegaefa
+minishell$ asdfaesg
+[0] : [asdfaesg]
+type 5, value asdfaesg
+minishell$ asfdfa
+[0] : [asfdfa]
+type 5, value asfdfa
+minishell$ fefjiesjif
+[0] : [fefjiesjif]
+type 5, value fefjiesjif
+minishell$ vvvsddvmk
+[0] : [vvvsddvmk]
+type 5, value vvvsddvmk
+minishell$ 
+75: check
+minishell$ 
+75: check
+minishell$ ls
+[0] : [ls]
+type 5, value ls
+Makefile
+a.out
+a.out.dSYM
+execution_run.c
+execution_util.c
+include
+infile
+infile2
+lexicalize_token.c
+lib
+libft
+libft.a
+main.c
+minishell.h
+outfile
+outfile2
+outfile3
+parser.c
+redirection.c
+signal.c
+struct.h
+test
+tokenizer_divide.c
+tokenizer_envp_convert.c
+tokenizer_envp_list.c
+tokenizer_parser.c
+tokenizer_trim.c
+minishell$ 

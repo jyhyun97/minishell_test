@@ -83,14 +83,18 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list)
         {
             config_heredoc(parse_list->cur->redirection);
             config_redirection(parse_list->cur->redirection);
-            execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
+            if (parse_list->cur->cmd != 0)
+                execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
+            exit(0);
         }
         else
         {
             config_heredoc(parse_list->cur->redirection);
             connect_pipe(parse_list->cur->next->pipefd, STDOUT_FILENO);
             config_redirection(parse_list->cur->redirection);
-            execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);        
+            if (parse_list->cur->cmd != 0)
+                execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
+            exit(0);
         }
     }
     else if (parse_list->cur->next != 0)
@@ -103,7 +107,9 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list)
             config_heredoc(parse_list->cur->redirection);
         connect_pipe(parse_list->cur->next->pipefd, STDOUT_FILENO);
         config_redirection(parse_list->cur->redirection);
-        execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
+        if (parse_list->cur->cmd != 0)
+            execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
+        exit(0);
     }
     else
     {
@@ -113,7 +119,9 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list)
         else
             config_heredoc(parse_list->cur->redirection);
         config_redirection(parse_list->cur->redirection);
-        execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
+        if (parse_list->cur->cmd != 0)
+            execve(make_path(parse_list->cur->cmd, envp_list), make_argv(parse_list->cur, envp_list), 0);
+        exit(0);
     }
 }
 
@@ -131,19 +139,23 @@ void    execute_line(t_parse_list *parse_list, t_list *envp_list)
         parse_list->cur = parse_list->cur->next;
     }
     parse_list->cur = parse_list->head;
-    //
-
     if (length == 1 && is_builtin(parse_list->cur->cmd) == 0)
     {
-        //config_redirection(parse_list->cur->redirection); //에러
+        config_heredoc(parse_list->cur->redirection);
+        config_redirection(parse_list->cur->redirection); //에러
+        
         //redirection 함수
         //if cmd 있음
             //builtin 실행
         //메인에서 실행, return으로 끝
         printf("length 1 and builtin true\n");
+        //빌트인 다 실행된 후
+        
+        //dup2(STDOUT_FILENO, STDIN_FILENO);//heredoc, rd_in
+        //dup2(STDIN_FILENO, STDOUT_FILENO);//rd_out, rd_2_out
     }
     else
-    {
+    {       
         pid = fork();
         // printf("many\n");
         if (pid == 0)
