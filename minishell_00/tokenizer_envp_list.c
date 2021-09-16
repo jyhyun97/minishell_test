@@ -28,8 +28,11 @@ int  split_key_value(char *str, char **key, char **value)
 void envp_list_initialize(char **envp, t_list **envp_list)
 {
     int i;
+    char *env_tmp = ft_strdup("?=0");
 
     init_list(envp_list);
+    add_node(*envp_list, env_tmp);
+    free(env_tmp);
     i = 0;
     while (envp[i] != 0)
     {

@@ -78,7 +78,7 @@ char *make_path(char *cmd, t_list *envp_list);
 
 //execution_run.c
 void config_heredoc(t_lex_list *redirection_list);
-void    config_redirection(t_lex_list *redirection_list);
+int    config_redirection(t_lex_list *redirection_list);
 void    connect_pipe(int pipefd[2], int io);
 int is_heredoc(t_lex_list *redirection_list);
 void multi_pipe(t_parse_list *parse_list, t_list *envp_list);

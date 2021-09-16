@@ -48,10 +48,10 @@ int is_builtin(char *cmd)
 {
     if (cmd == NULL)
         return (0);
-    if (ft_strncmp(cmd, "cd", 2) == 0 || ft_strncmp(cmd, "echo", 4) == 0 ||
-        ft_strncmp(cmd, "export", 6) == 0 || ft_strncmp(cmd, "unset", 5) == 0 ||
-        ft_strncmp(cmd, "env", 3) == 0 || ft_strncmp(cmd, "pwd", 3) == 0 ||
-        ft_strncmp(cmd, "pwd", 3) == 0)
+    if (ft_strncmp(cmd, "cd", 3) == 0 || ft_strncmp(cmd, "echo", 5) == 0 ||
+        ft_strncmp(cmd, "export", 7) == 0 || ft_strncmp(cmd, "unset", 6) == 0 ||
+        ft_strncmp(cmd, "env", 4) == 0 || ft_strncmp(cmd, "pwd", 4) == 0 ||
+        ft_strncmp(cmd, "pwd", 4) == 0)
         return (0);//빌트인
     else
         return (1);//빌트인 아님
@@ -72,7 +72,9 @@ char *make_path(char *cmd, t_list *envp_list)
         envp_list->cur = envp_list->cur->next;
     }
     if (envp_list->cur == 0)
-        return (0);
+        return (cmd);
+        //return (0);
+        
     bins = ft_split(envp_list->cur->value, ':');
     i = 0;
     while (bins[i] != 0)
@@ -88,5 +90,6 @@ char *make_path(char *cmd, t_list *envp_list)
         i++;
     }
     arr_free(bins);
-    return (0);
+    return (cmd);
+    //return (0);
 }

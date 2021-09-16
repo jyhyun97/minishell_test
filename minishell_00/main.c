@@ -91,61 +91,57 @@ t_parse_list *parse_line(char *line, t_list *envp_list)
     t_lex_list *lex_list;
     t_parse_list *parse_list;
     
-    //tokenizing
-    if (line == 0 || *line == '\0'){
-        printf("75: check\n");
-        //조
+    if (line == 0 || *line == '\0')
        return (0);
-    }
     if (check_even_quote(line) == 1)
     {
         free(line);
         return (0);
     }
-    trimed_line = ft_strtrim(line, " ");  //???문제 있어요.
+    //tokenizing
+    trimed_line = ft_strtrim(line, " ");
     free(line);
     tokens = word_split(trimed_line, ' ');
     free(trimed_line);
     tokens = convert_env(tokens, envp_list);
-    tokens = divide_tokens(tokens); //???
-    tokens = trim_tokens(tokens); // ???
-    while (tokens[i] != 0)
-    {
-        printf("[%d] : [%s]\n", i, tokens[i]);
-        i++;
-    }
+    tokens = divide_tokens(tokens);
+    tokens = trim_tokens(tokens);
+    // while (tokens[i] != 0)
+    // {
+    //     printf("[%d] : [%s]\n", i, tokens[i]);
+    //     i++;
+    // }
     //lexicalizing
     init_lex_list(&lex_list);
     Lexicalize_token(tokens, lex_list);
-    
-    //---token_free---
     arr_free(tokens);
 
     if (check_syntax_error(lex_list) == 1)
     {
+        free(envp_list->head->value);
+        envp_list->head->value = ft_strdup("258");
+        //envp_list의 ?를
         delete_lex_list(&lex_list);
         return (0);
     }
 
-    lex_list->cur = lex_list->head;
-    while (lex_list->cur != 0)
-    {
-        printf("type %d, value %s\n", lex_list->cur->type, lex_list->cur->value);
-        lex_list->cur = lex_list->cur->next;
-    }
+    //lex_list->cur = lex_list->head;
+    // while (lex_list->cur != 0)
+    // {
+    //     printf("type %d, value %s\n", lex_list->cur->type, lex_list->cur->value);
+    //     lex_list->cur = lex_list->cur->next;
+    // }
 
     //parsing
     init_parse_list(&parse_list);
     parse_lexer(parse_list, lex_list);
-    //---lex_free---
     delete_lex_list(&lex_list);
 
-    parse_list->cur = parse_list->head; // 여기서 잘 대입이 되지 않음
-
-    while (parse_list->cur != 0)
-    {
-        parse_list->cur = parse_list->cur->next;
-    }
+    // parse_list->cur = parse_list->head;
+    // while (parse_list->cur != 0)
+    // {
+    //     parse_list->cur = parse_list->cur->next;
+    // }
     return (parse_list);
 }
 
