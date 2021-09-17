@@ -149,6 +149,7 @@ int main(int argc, char **argv, char **envp)
 {
     char *line;
     t_list *envp_list;
+    t_list *shell_list;
     t_parse_list *parse_list;
 
 
@@ -157,7 +158,7 @@ int main(int argc, char **argv, char **envp)
     //signal_initialize();
 
     envp_list_initialize(envp, &envp_list);
-
+    init_list(&shell_list);
     while (1)
     {
         line = readline("minishell$ "); //공뱍들어왔을떄 처리
@@ -169,7 +170,7 @@ int main(int argc, char **argv, char **envp)
         }
  
         //실행부
-        execute_line(parse_list, envp_list);
+        execute_line(parse_list, envp_list, shell_list);
         //프리
         delete_parse_list(&parse_list);
         // rl_redisplay();
@@ -177,5 +178,6 @@ int main(int argc, char **argv, char **envp)
     }
     //reset_input_mode();
     delete_list(&envp_list);
+    delete_list(&shell_list);
     return (0);
 }

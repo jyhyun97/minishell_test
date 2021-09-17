@@ -82,7 +82,7 @@ int    config_redirection(t_lex_list *redirection_list);
 void    connect_pipe(int pipefd[2], int io);
 int is_heredoc(t_lex_list *redirection_list);
 void multi_pipe(t_parse_list *parse_list, t_list *envp_list);
-void    execute_line(t_parse_list *parse_list, t_list *envp_list);
+void    execute_line(t_parse_list *parse_list, t_list *envp_list, t_list *shell_list);
 
 
 //redirection.c
@@ -91,5 +91,21 @@ int		redirection_out(char *file);
 int		redirection_double_out(char *file);
 void    make_heredoc(char *delimiter);
 int     redirection_heredoc(char *delimiter);
+
+//builtin
+int ft_export(t_parse_node *parse_node, t_list *envp_list, t_list *shell_list);
+void env(t_list *envp_list);
+void pwd();
+void cd(t_lex_node *dir, t_list *envp_list);
+
+int	ft_strcmp(const char *s1, const char *s2);
+int count_node(t_list *list);
+
+//builtin_sorted.c
+void    add_sorted_node(t_list *list, char *key, char *value);
+void    init_sorted_list(t_list *sorted_list, t_list *envp_list, t_list *shell_list);
+void    sort_sorted_list(t_list *sorted_list);
+void    print_sorted_list(t_list *sorted_list);
+
 
 #endif

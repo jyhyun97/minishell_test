@@ -192,7 +192,7 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list)
     }
 }
 
-void    execute_line(t_parse_list *parse_list, t_list *envp_list)
+void    execute_line(t_parse_list *parse_list, t_list *envp_list, t_list *shell_list)
 {
     int length = 0;
     int pid;
@@ -231,6 +231,22 @@ void    execute_line(t_parse_list *parse_list, t_list *envp_list)
                 ft_echo(parse_list->cur);//parse_node를 보낼까 parse_list를 보낼까 어떤 게 일관성 있을까 고민
                 free(envp_list->head->value);
                 envp_list->head->value = ft_strdup("0");
+            }
+            else if (ft_strncmp(parse_list->cur->cmd, "export", 7) == 0)
+            {
+                ft_export(parse_list->cur, envp_list, shell_list);
+            }
+            else if (ft_strncmp(parse_list->cur->cmd, "env", 4) == 0)
+            {
+                env(envp_list);
+            }
+            else if (ft_strncmp(parse_list->cur->cmd, "pwd", 4) == 0)
+            {
+                pwd(envp_list);
+            }
+            else if (ft_strncmp(parse_list->cur->cmd, "cd", 3) == 0)
+            {
+                cd(parse_list->cur->arg->head, envp_list);
             }
         }
         dup2(fd_in, STDIN_FILENO);
