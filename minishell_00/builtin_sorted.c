@@ -7,9 +7,9 @@ void add_sorted_node(t_list *list, char *key, char *value)
     node = (t_node *)malloc(sizeof(t_node));
     ft_bzero(node, sizeof(t_node));
     if (key != 0)
-        node->key = ft_strdup(key);
+        node->key = key;
     if (value != 0)
-        node->value = ft_strdup(value);
+        node->value = value;
     if (list->head == 0 && list->tail == 0)
     {
         list->head = node;
@@ -38,13 +38,14 @@ void init_sorted_list(t_list *sorted_list, t_list *envp_list, t_list *shell_list
         add_sorted_node(sorted_list, shell_list->cur->key, shell_list->cur->value);
         shell_list->cur = shell_list->cur->next;
     }
+
 }
 
 void sort_sorted_list(t_list *sorted_list)
 {
     t_node tmp;
     int cnt = count_node(sorted_list);
-    int i = 1;
+    int i = 0;
     while (i < cnt)
     {
         sorted_list->cur = sorted_list->head;
@@ -63,6 +64,8 @@ void sort_sorted_list(t_list *sorted_list)
         }
         i++;
     }
+
+    
 }
 
 void    print_sorted_list(t_list *sorted_list)

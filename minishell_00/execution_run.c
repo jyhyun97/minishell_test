@@ -236,6 +236,10 @@ void    execute_line(t_parse_list *parse_list, t_list *envp_list, t_list *shell_
             {
                 ft_export(parse_list->cur, envp_list, shell_list);
             }
+            else if (ft_strncmp(parse_list->cur->cmd, "unset", 6) == 0)
+            {
+                ft_unset(parse_list->cur, envp_list, shell_list);
+            }
             else if (ft_strncmp(parse_list->cur->cmd, "env", 4) == 0)
             {
                 env(envp_list);
@@ -247,6 +251,10 @@ void    execute_line(t_parse_list *parse_list, t_list *envp_list, t_list *shell_
             else if (ft_strncmp(parse_list->cur->cmd, "cd", 3) == 0)
             {
                 cd(parse_list->cur->arg->head, envp_list);
+            }
+            else if (ft_strncmp(parse_list->cur->cmd, "exit", 5) == 0)
+            {
+                ft_exit(parse_list->cur);
             }
         }
         dup2(fd_in, STDIN_FILENO);

@@ -97,6 +97,9 @@ int ft_export(t_parse_node *parse_node, t_list *envp_list, t_list *shell_list);
 void env(t_list *envp_list);
 void pwd();
 void cd(t_lex_node *dir, t_list *envp_list);
+int ft_unset(t_parse_node *parse_node, t_list *envp_list, t_list *shell_list);
+void    ft_echo(t_parse_node *parse_node);
+void ft_exit(t_parse_node *parse_node);
 
 int	ft_strcmp(const char *s1, const char *s2);
 int count_node(t_list *list);

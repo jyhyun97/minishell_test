@@ -111,6 +111,7 @@ t_parse_list *parse_line(char *line, t_list *envp_list)
     //     printf("[%d] : [%s]\n", i, tokens[i]);
     //     i++;
     // }
+
     //lexicalizing
     init_lex_list(&lex_list);
     Lexicalize_token(tokens, lex_list);
