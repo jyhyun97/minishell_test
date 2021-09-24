@@ -154,9 +154,9 @@ int main(int argc, char **argv, char **envp)
     t_parse_list *parse_list;
 
 
-    //save_input_mode();
-    //set_input_mode();
-    //signal_initialize();
+    save_input_mode();
+    set_input_mode();
+    signal_initialize();
 
     envp_list_initialize(envp, &envp_list);
     init_list(&shell_list);
@@ -165,19 +165,22 @@ int main(int argc, char **argv, char **envp)
         line = readline("minishell$ "); //공뱍들어왔을떄 처리
         if (line && *line)
             add_history(line);
+        else if (line == NULL)
+        {
+            printf("exit\n");
+            reset_input_mode();
+            exit(0);
+        }
         parse_list = parse_line(line, envp_list);
         if (parse_list == 0){
            continue;
         }
- 
         //실행부
         execute_line(parse_list, envp_list, shell_list);
         //프리
         delete_parse_list(&parse_list);
-        // rl_redisplay();
-        // rl_replace_line("\n", 0);
     }
-    //reset_input_mode();
+    reset_input_mode();
     delete_list(&envp_list);
     delete_list(&shell_list);
     return (0);

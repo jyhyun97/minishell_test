@@ -5,13 +5,15 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+//#include <readline/readline.h>
+//#include <readline/history.h>
 #include <fcntl.h>
-// #include "include/readline/readline.h"
-// #include "include/readline/history.h"
+#include "include/readline/readline.h"
+#include "include/readline/history.h"
 #include "libft/libft.h"
 #include "struct.h"
+#include <termios.h>
+
 
 #define RD_IN_SINGLE 0  //<
 #define RD_OUT_SINGLE 1 // >
@@ -28,9 +30,17 @@
 #define PIPE_ERR 104
 #define NEW_LINE_ERR 105
 
+
+struct termios org_term;//나중에 옮길 수 있음
+struct termios new_term;//
+
 //signal.c
 void sig_int(int sig_number);
 void signal_initialize(void);
+void save_input_mode(void);
+void set_input_mode(void);
+void reset_input_mode(void);
+
 
 //tokenizer_envp_list.c
 int  split_key_value(char *str, char **key, char **value);

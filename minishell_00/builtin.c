@@ -7,10 +7,14 @@ void ft_exit(t_parse_node *parse_node)
 
     i = 0;
     if (parse_node->arg->head == 0)
+    {
+        tcsetattr(STDIN_FILENO, TCSANOW, &org_term);
         exit (0);
+    }
     if (arg_cout > 1)
     {
         printf("exit\nexit: too many arguments\n");
+        tcsetattr(STDIN_FILENO, TCSANOW, &org_term);
         exit(1);
     }
     while(i < ft_strlen(parse_node->arg->head->value))
@@ -18,10 +22,12 @@ void ft_exit(t_parse_node *parse_node)
         if (ft_isdigit(parse_node->arg->head->value[i]) == 0)
         {
             printf("exit\nexit: %s numeric argument required\n", parse_node->arg->head->value);
+            tcsetattr(STDIN_FILENO, TCSANOW, &org_term);
             exit(255);
         }
         i++;
     }
+    tcsetattr(STDIN_FILENO, TCSANOW, &org_term);
     exit(ft_atoi(parse_node->arg->head->value)); // 반환값은?
 }
 
