@@ -145,14 +145,13 @@ t_parse_list *parse_line(char *line, t_list *envp_list)
     // }
     return (parse_list);
 }
-
+//gcc *.c -lreadline -lft -L./libft -L/opt/homebrew/opt/readline/lib -I/opt/homebrew/opt/readline/include
 int main(int argc, char **argv, char **envp)
 {
     char *line;
     t_list *envp_list;
     t_list *shell_list;
     t_parse_list *parse_list;
-
 
     save_input_mode();
     set_input_mode();
@@ -162,7 +161,7 @@ int main(int argc, char **argv, char **envp)
     init_list(&shell_list);
     while (1)
     {
-        line = readline("minishell$ "); //공뱍들어왔을떄 처리
+        line = readline("minishell$ ");
         if (line && *line)
             add_history(line);
         else if (line == NULL)

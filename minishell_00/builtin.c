@@ -54,7 +54,11 @@ void cd(t_lex_node *dir, t_list *envp_list)
 {
     int nResult;
     char path[1024];
-    if (dir == 0){
+    char *old_pwd;
+
+    if (dir == 0)
+    {
+        envp_list->cur = envp_list->head;
         while (envp_list->cur != 0)
         {
             if(ft_strncmp(envp_list->cur->key, "HOME", 5) == 0)
@@ -72,9 +76,15 @@ void cd(t_lex_node *dir, t_list *envp_list)
         {
             if(ft_strncmp(envp_list->cur->key, "PWD", 4) == 0)
             {
-                envp_list->cur->value = NULL;
+                old_pwd = ft_strdup(envp_list->cur->value);
                 free(envp_list->cur->value);
+                envp_list->cur->value = NULL;
                 envp_list->cur->value = ft_strdup(getcwd(path, 1024));
+            }
+            if(ft_strncmp(envp_list->cur->key, "OLDPWD", 7) == 0)
+            {
+                free(envp_list->cur->value);
+                envp_list->cur->value = old_pwd;
                 return;
             }
             envp_list->cur = envp_list->cur->next;
@@ -93,9 +103,15 @@ void cd(t_lex_node *dir, t_list *envp_list)
         {
             if(ft_strncmp(envp_list->cur->key, "PWD", 4) == 0)
             {
-                envp_list->cur->value = NULL;
+                old_pwd = ft_strdup(envp_list->cur->value);
                 free(envp_list->cur->value);
+                envp_list->cur->value = NULL;
                 envp_list->cur->value = ft_strdup(getcwd(path, 1024));
+            }
+            if(ft_strncmp(envp_list->cur->key, "OLDPWD", 7) == 0)
+            {
+                free(envp_list->cur->value);
+                envp_list->cur->value = old_pwd;
                 return;
             }
             envp_list->cur = envp_list->cur->next;

@@ -79,7 +79,7 @@ char **trim_tokens(char **tokens)
         전체 tokens의 내용의 따옴표 제거
     */
     int i = 0;
-    while(tokens[i] != NULL)//
+    while(tokens[i] != NULL)
     {
         tokens[i] = trim_quote(tokens[i]);
         i++;

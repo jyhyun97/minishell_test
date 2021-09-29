@@ -114,7 +114,6 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list)
     int status;
 
     pid = 0;
-
     parse_list->cur = parse_list->tail;
     while (parse_list->cur != 0 && pid == 0)
     {
@@ -209,7 +208,7 @@ void execute_line(t_parse_list *parse_list, t_list *envp_list, t_list *shell_lis
         length++;
         parse_list->cur = parse_list->cur->next;
     }
-    parse_list->cur = parse_list->head;
+    parse_list->cur = parse_list->head;//length 대체 parse_list->head->next == NULL
     if (length == 1 && is_builtin(parse_list->cur->cmd) == 0)
     {
         config_heredoc(parse_list->cur->redirection);

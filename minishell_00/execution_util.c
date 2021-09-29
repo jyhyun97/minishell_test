@@ -77,12 +77,14 @@ char *make_path(char *cmd, t_list *envp_list)
         
     bins = ft_split(envp_list->cur->value, ':');
     i = 0;
+    
+    struct stat buf;
     while (bins[i] != 0)
     {
         tmp = ft_strjoin(bins[i], "/");
         new_path = ft_strjoin(tmp, cmd);
         free(tmp);
-        if (access(new_path, R_OK) != -1)
+        if (stat(new_path, &buf) != -1)
         {
             arr_free(bins);
             return (new_path);

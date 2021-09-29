@@ -73,6 +73,6 @@ char **divide_tokens(char **tokens)
     new_arr[k] =0;
     //free(tokens);
     arr_free(tokens);
-        
+
     return (new_arr);
 }
