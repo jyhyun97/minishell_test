@@ -31,9 +31,14 @@
 #define PIPE_ERR 104
 #define NEW_LINE_ERR 105
 
+typedef struct s_gloval
+{
+    struct termios org_term;
+    struct termios new_term;
+    int sig_code;
+}   t_gloval;
 
-struct termios org_term;//나중에 옮길 수 있음
-struct termios new_term;//
+t_gloval g_gloval;
 
 //signal.c
 void sig_int(int sig_number);
@@ -92,9 +97,9 @@ void config_heredoc(t_lex_list *redirection_list);
 int    config_redirection(t_lex_list *redirection_list);
 void    connect_pipe(int pipefd[2], int io);
 int is_heredoc(t_lex_list *redirection_list);
-void multi_pipe(t_parse_list *parse_list, t_list *envp_list);
+void multi_pipe(t_parse_list *parse_list, t_list *envp_list, t_list *shell_list);
 void    execute_line(t_parse_list *parse_list, t_list *envp_list, t_list *shell_list);
-
+int is_n_option(char *str);
 
 //redirection.c
 int		redirection_in(char *file);
@@ -105,11 +110,11 @@ int     redirection_heredoc(char *delimiter);
 
 //builtin
 int ft_export(t_parse_node *parse_node, t_list *envp_list, t_list *shell_list);
-void env(t_list *envp_list);
-void pwd();
-void cd(t_lex_node *dir, t_list *envp_list);
+int ft_env(t_list *envp_list);
+int ft_pwd();
+int ft_cd(t_lex_node *dir, t_list *envp_list);
 int ft_unset(t_parse_node *parse_node, t_list *envp_list, t_list *shell_list);
-void    ft_echo(t_parse_node *parse_node);
+int ft_echo(t_parse_node *parse_node);
 void ft_exit(t_parse_node *parse_node);
 
 int	ft_strcmp(const char *s1, const char *s2);

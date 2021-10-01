@@ -95,6 +95,9 @@ t_parse_list *parse_line(char *line, t_list *envp_list)
        return (0);
     if (check_even_quote(line) == 1)
     {
+        printf("allow only even quote\n");
+        free(envp_list->head->value);
+        envp_list->head->value = ft_strdup("1");
         free(line);
         return (0);
     }
@@ -162,6 +165,13 @@ int main(int argc, char **argv, char **envp)
     while (1)
     {
         line = readline("minishell$ ");
+        
+        if (g_gloval.sig_code != 0)
+        {
+            free(envp_list->head->value);
+            envp_list->head->value = ft_itoa(g_gloval.sig_code);
+            g_gloval.sig_code = 0;
+        }
         if (line && *line)
             add_history(line);
         else if (line == NULL)
