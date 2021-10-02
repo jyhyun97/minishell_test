@@ -5,35 +5,26 @@ int ft_echo(t_parse_node *parse_node)
     int flag_n;
     flag_n = 0;
 
-    //-n 옵션은 어떻게 할까? 유효하지 않은 옵션이 동시에 들어오는 경우는?
-
-    //옵션 처리 이쪽에서
-    //유효한 n 옵션은 플래그로 저장하고 쭉 넘겨서, 유효하지 않은 n옵션이 등장한 순간부터 출력하면 됨
-    //-nnnnn -n -n -n 유효 while : flag on
-    //-n-n-n -x -z 무효 while : printf
     parse_node->option->cur = parse_node->option->head;
     while (parse_node->option->cur != 0 && is_n_option(parse_node->option->cur->value) == 0)
     {
         flag_n = 1;
         parse_node->option->cur = parse_node->option->cur->next;
     }
-    //무효 옵션 출력
     while (parse_node->option->cur != 0)
     {
         printf("%s ", parse_node->option->cur->value);
         parse_node->option->cur = parse_node->option->cur->next;
     }
-
-    //arg 그냥 출력. 어차피 따옴표나 환경변수 파싱 단계에서 다 처리 해줘서 그냥 출력만 하면 됨
     parse_node->arg->cur = parse_node->arg->head;
     while (parse_node->arg->cur != 0)
     {
         printf("%s ", parse_node->arg->cur->value);
         parse_node->arg->cur = parse_node->arg->cur->next;
     }
-    printf("\b"); //마지막 공백 하나 지워줌
+    printf("\b");
     if (flag_n != 1)
-        printf("\n"); //n옵션 있으면 개행 X
+     printf("\n");
     return (0);
 }
 
@@ -74,7 +65,7 @@ void ft_exit(t_parse_node *parse_node)
     }
     printf("exit\n");
     tcsetattr(STDIN_FILENO, TCSANOW, &(g_gloval.org_term));
-    exit(ft_atoi(parse_node->arg->head->value)); // 반환값은?
+    exit(ft_atoi(parse_node->arg->head->value));
 }
 
 int ft_env(t_list *envp_list)

@@ -24,7 +24,7 @@ char **make_argv(t_parse_node *parse_node, t_list *envp_list)
     new_argv = (char **)malloc(sizeof(char *) * (cnt_all_node + 2));
     i = 0;
     parse_node->option->cur = parse_node->option->head;
-    new_argv[i] = parse_node->cmd; //cmd , minishell 파일이름..
+    new_argv[i] = parse_node->cmd;
     i++;
     while (parse_node->option->cur != 0)
     {
@@ -52,9 +52,9 @@ int is_builtin(char *cmd)
         ft_strncmp(cmd, "export", 7) == 0 || ft_strncmp(cmd, "unset", 6) == 0 ||
         ft_strncmp(cmd, "env", 4) == 0 || ft_strncmp(cmd, "pwd", 4) == 0 ||
         ft_strncmp(cmd, "exit", 5) == 0)
-        return (0);//빌트인
+        return (0);
     else
-        return (1);//빌트인 아님
+        return (1);
 }
 
 char *make_path(char *cmd, t_list *envp_list)
@@ -73,11 +73,8 @@ char *make_path(char *cmd, t_list *envp_list)
     }
     if (envp_list->cur == 0)
         return (cmd);
-        //return (0);
-        
     bins = ft_split(envp_list->cur->value, ':');
     i = 0;
-    
     struct stat buf;
     while (bins[i] != 0)
     {
@@ -93,5 +90,4 @@ char *make_path(char *cmd, t_list *envp_list)
     }
     arr_free(bins);
     return (cmd);
-    //return (0);
 }

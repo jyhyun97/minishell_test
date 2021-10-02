@@ -109,45 +109,25 @@ t_parse_list *parse_line(char *line, t_list *envp_list)
     tokens = convert_env(tokens, envp_list);
     tokens = divide_tokens(tokens);
     tokens = trim_tokens(tokens);
-    // while (tokens[i] != 0)
-    // {
-    //     printf("[%d] : [%s]\n", i, tokens[i]);
-    //     i++;
-    // }
 
     //lexicalizing
     init_lex_list(&lex_list);
     Lexicalize_token(tokens, lex_list);
     arr_free(tokens);
-
     if (check_syntax_error(lex_list) == 1)
     {
         free(envp_list->head->value);
         envp_list->head->value = ft_strdup("258");
-        //envp_list의 ?를
         delete_lex_list(&lex_list);
         return (0);
     }
-
-    //lex_list->cur = lex_list->head;
-    // while (lex_list->cur != 0)
-    // {
-    //     printf("type %d, value %s\n", lex_list->cur->type, lex_list->cur->value);
-    //     lex_list->cur = lex_list->cur->next;
-    // }
-
     //parsing
     init_parse_list(&parse_list);
     parse_lexer(parse_list, lex_list);
     delete_lex_list(&lex_list);
-
-    // parse_list->cur = parse_list->head;
-    // while (parse_list->cur != 0)
-    // {
-    //     parse_list->cur = parse_list->cur->next;
-    // }
     return (parse_list);
 }
+
 //gcc *.c -lreadline -lft -L./libft -L/opt/homebrew/opt/readline/lib -I/opt/homebrew/opt/readline/include
 int main(int argc, char **argv, char **envp)
 {
@@ -184,9 +164,7 @@ int main(int argc, char **argv, char **envp)
         if (parse_list == 0){
            continue;
         }
-        //실행부
         execute_line(parse_list, envp_list, shell_list);
-        //프리
         delete_parse_list(&parse_list);
     }
     reset_input_mode();

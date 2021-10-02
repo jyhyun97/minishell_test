@@ -64,8 +64,6 @@ void sort_sorted_list(t_list *sorted_list)
         }
         i++;
     }
-
-    
 }
 
 void    print_sorted_list(t_list *sorted_list)

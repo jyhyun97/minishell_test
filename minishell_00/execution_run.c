@@ -2,22 +2,21 @@
 
 int is_n_option(char *str)
 {
-    //맨 처음이 -이고, 그 다음부터 널문자까지 계속 n인가요? 0 아니면 1
     int i;
 
     i = 0;
-    if (str[i] != '-') //첫 글자가 -이어야 함
+    if (str[i] != '-')
         return (1);
     i++;
-    if (str[i] == '\0') //혹시 "-" 만 있고 뒤에 아무것도 없으면 안됨
+    if (str[i] == '\0')
         return (1);
     while (str[i] != '\0')
     {
-        if (str[i] != 'n') //만약 중간에 ㄴn이 아닌 문자가 있다면 안됨
+        if (str[i] != 'n')
             return (1);
         i++;
     }
-    return (0); //여기까지 통과하면 올바른 -n 옵션
+    return (0);
 }
 
 void config_heredoc(t_lex_list *redirection_list)
@@ -102,7 +101,6 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list, t_list *shell_list)
     parse_list->cur = parse_list->tail;
     while (parse_list->cur != 0 && pid == 0)
     {
-        //터미널 설정 원상복구
         tcsetattr(STDIN_FILENO, TCSANOW, &(g_gloval.org_term));
         pipe(parse_list->cur->pipefd);
         pid = fork();
@@ -152,10 +150,9 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list, t_list *shell_list)
     else if (parse_list->cur->next != 0)
     {
         wait(&status);
-
-        if (is_heredoc(parse_list->cur->redirection) == 0)       //heredoc 없
-            connect_pipe(parse_list->cur->pipefd, STDIN_FILENO); //if (rd_list has heredoc)
-        else                                                     //heredoc 있
+        if (is_heredoc(parse_list->cur->redirection) == 0)
+            connect_pipe(parse_list->cur->pipefd, STDIN_FILENO);
+        else
             config_heredoc(parse_list->cur->redirection);
         connect_pipe(parse_list->cur->next->pipefd, STDOUT_FILENO);
         if (config_redirection(parse_list->cur->redirection) == 1)
@@ -197,8 +194,6 @@ void multi_pipe(t_parse_list *parse_list, t_list *envp_list, t_list *shell_list)
     }
 }
 
-
-
 void execute_line(t_parse_list *parse_list, t_list *envp_list, t_list *shell_list)
 {
     int length = 0;
@@ -215,7 +210,7 @@ void execute_line(t_parse_list *parse_list, t_list *envp_list, t_list *shell_lis
         length++;
         parse_list->cur = parse_list->cur->next;
     }
-    parse_list->cur = parse_list->head;//length 대체 parse_list->head->next == NULL
+    parse_list->cur = parse_list->head;
     if (length == 1 && is_builtin(parse_list->cur->cmd) == 0)
     {
         config_heredoc(parse_list->cur->redirection);
@@ -229,8 +224,6 @@ void execute_line(t_parse_list *parse_list, t_list *envp_list, t_list *shell_lis
             close(fd_out);
             return;
         }
-        //if cmd 있음
-        //builtin 실행
         if (parse_list->cur->cmd != 0)
         {
             int rtn;
@@ -242,7 +235,6 @@ void execute_line(t_parse_list *parse_list, t_list *envp_list, t_list *shell_lis
         dup2(fd_out, STDOUT_FILENO);
         close(fd_in);
         close(fd_out);
-        //메인에서 실행, return으로 끝
     }
     else
     {
@@ -250,21 +242,9 @@ void execute_line(t_parse_list *parse_list, t_list *envp_list, t_list *shell_lis
         if (pid == 0)
             multi_pipe(parse_list, envp_list, shell_list);
         else
-            wait(&status); //
+            wait(&status);
         free(envp_list->head->value);
         envp_list->head->value = ft_itoa(status / 256);
-        //터미널 세팅 미니쉘버전 변경
         tcsetattr(STDIN_FILENO, TCSANOW, &(g_gloval.new_term));
     }
 }
-
-//
-//부모 $?=0
-//제일 먼저 실행 zesf 실행되기 전 $?= 0 실행되면 $? = 127
-//|
-//제일 먼저 실행 2 echo $? 실행되기 전 $?= 0 실행되면 $? = 0
-//
-//ls 정상
-// zzzzz | echo $?
-
-//

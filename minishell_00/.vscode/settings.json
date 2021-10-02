@@ -3,6 +3,7 @@
         "libft.h": "c",
         "minishell.h": "c",
         "samin": "c",
-        "readline.h": "c"
+        "readline.h": "c",
+        "stdio.h": "c"
     }
 }

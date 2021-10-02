@@ -2,9 +2,13 @@
 
 int count_tokens(char **tokens)
 {
-    int cnt = 0;
-    int i = 0;
-    int j = 0;
+    int cnt;
+    int i;
+    int j;
+
+    cnt = 0;
+    i = 0;
+    j = 0;
     while (tokens[i] != 0)
     {
         j = 0;
@@ -37,18 +41,22 @@ int count_tokens(char **tokens)
 char **divide_tokens(char **tokens)
 {
     char **new_arr;
-    int i = 0;
-    int j = 0;
-    int k = 0;
-    int start = 0;
+    int i;
+    int j;
+    int k;
+    int start;
 
     new_arr = (char **)malloc(sizeof(char *) * (count_tokens(tokens) + 1));
+    i = 0;
+    j = 0;
+    k = 0;
+    start = 0;
     while (tokens[i] != 0)
     {
         j = 0;
         while (tokens[i][j] != '\0')
         {
-            start = j;//80~95행 나중에 함수화 해서 빼기 (count tokens, divide tokens 사용)
+            start = j;
             if (ft_strncmp(&tokens[i][j], "<<", 2) == 0 || ft_strncmp(&tokens[i][j], ">>", 2) == 0)
                 j += 2;
             else if (tokens[i][j] == '<' || tokens[i][j] == '>' || tokens[i][j] == '|')
@@ -71,8 +79,6 @@ char **divide_tokens(char **tokens)
         i++;
     }
     new_arr[k] =0;
-    //free(tokens);
     arr_free(tokens);
-
     return (new_arr);
 }

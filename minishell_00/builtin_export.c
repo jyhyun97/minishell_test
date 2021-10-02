@@ -163,9 +163,9 @@ void export_case_envp(t_parse_node *parse_node, t_list *envp_list, t_list *shell
 {
     char *tmp_key;
     char *tmp_value;
+
     tmp_key = make_key(parse_node->arg->cur->value);
     tmp_value = make_value(parse_node->arg->cur->value);
-
     envp_list->cur = envp_list->head;
     while (envp_list->cur != 0)
     {
@@ -235,7 +235,9 @@ int ft_export(t_parse_node *parse_node, t_list *envp_list, t_list *shell_list)
 
 int ft_unset(t_parse_node *parse_node, t_list *envp_list, t_list *shell_list)
 {
-    int rtn = 0;
+    int rtn;
+
+    rtn = 0;
     parse_node->arg->cur = parse_node->arg->head;
     while (parse_node->arg->cur != 0)
     {
@@ -250,7 +252,6 @@ int ft_unset(t_parse_node *parse_node, t_list *envp_list, t_list *shell_list)
             {
                 char *tmp_key;
                 tmp_key = make_key(parse_node->arg->cur->value);
-
                 envp_list->cur = envp_list->head;
                 while (envp_list->cur != 0)
                 {

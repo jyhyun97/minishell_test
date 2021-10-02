@@ -2,7 +2,9 @@
 
 int measure_env_key(char *str)
 {
-    int i = 0; 
+    int i;
+
+    i = 0; 
     while (str[i] != '\0')
     {
         if (str[i] == ' ' || str[i] == '$' || str[i] == '"' || str[i] == '\'' ||
@@ -17,8 +19,9 @@ int measure_env_key(char *str)
 
 char *get_env(char *key, t_list *envp_list)
 {
-    int i = 0;
+    int i;
 
+    i = 0;
     envp_list->cur = envp_list->head;
     while(envp_list->cur != NULL)
     {
@@ -33,12 +36,16 @@ char *get_env(char *key, t_list *envp_list)
 char *new_arr_str(char *arr_str, char *envp_key, t_list *envp_list)
 {
     char *new_str;
-    char *envp_value = get_env(envp_key, envp_list);
-    int i = 0;
-    int j = 0;
-    int k = 0;
+    char *envp_value;
+    int i;
+    int j;
+    int k;
 
+    envp_value = get_env(envp_key, envp_list);
     new_str = (char *)malloc(sizeof(char) * ((int)ft_strlen(arr_str) + (int)ft_strlen(envp_value) + 4));
+    i = 0;
+    j = 0;
+    k = 0;
     while (arr_str[i] != '$' && arr_str[i] != '\0')
     {
         new_str[j] = arr_str[i];
@@ -69,11 +76,12 @@ char *new_arr_str(char *arr_str, char *envp_key, t_list *envp_list)
 
 char **convert_env(char **arr, t_list *envp_list)
 {
+    int i;
+    int j;
+    char *tmp;
 
-    int i = 0;
-    int j = 0;
-    char *tmp; 
-
+    i = 0;
+    j = 0;
     while (arr[i] != 0)
     {
         j = 0;

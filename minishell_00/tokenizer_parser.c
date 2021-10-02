@@ -9,17 +9,16 @@ char	**arr_free(char **arr)
 	{
 		free(arr[i]);
 		i++;
-	//	printf("free 12 : %d\n", i);
 	}
 	free(arr);
-	//printf("free 15 check\n");
-
 	return (NULL);
 }
 
 int skip_quotes(char const *s, char q)
 {
-	int i = 0;
+	int i;
+
+	i = 0;
 	if (s[i] == q)
 		i++;
 	while(s[i] != q && s[i] != '\0') 
@@ -31,11 +30,13 @@ int skip_quotes(char const *s, char q)
 
 static int cnt_word(char const *s, char c)
 {
-	int i = 0;
-	int cnt = 0;
+	int i;
+	int cnt;
 
 	if (s == 0)
 		return (0);
+	i = 0;
+	cnt = 0;
 	while (s[i] != '\0')
 	{
 		if (s[i] == '"')
@@ -50,7 +51,7 @@ static int cnt_word(char const *s, char c)
 		else if (s[i] != '\0' && s[i] != '"'){
 			i++;
 		}
-		if (s[i] == c || s[i + 1] == '\0')//"aa"[\0]
+		if (s[i] == c || s[i + 1] == '\0')
 		{
 			while (s[i] == c && s[i] != '\0')
 				i++;
@@ -62,10 +63,11 @@ static int cnt_word(char const *s, char c)
 
 static int cnt_letter(char const *s, char c)
 {
-	int i = 0;
+	int i;
 
 	if (s == 0)
 		return (0);
+	i = 0;
 	while (s[i] != '\0')
 	{
 		if (s[i] == '"')
@@ -79,7 +81,7 @@ static int cnt_letter(char const *s, char c)
 			i++;
 			return (i);
 		}
-		else if (s[i] == c/* || s[i + 1] == '\0'*/)
+		else if (s[i] == c)
 			return (i);
 		else if (s[i] != '\0' && s[i] != '"')
 			i++;
@@ -89,17 +91,19 @@ static int cnt_letter(char const *s, char c)
 
 static char **arr_fill(char **arr, char const *s, char c)
 {
-	int i = 0;
-	int j = 0;
+	int i;
+	int j;
 	
 	arr = (char **)malloc(sizeof(char *) * (cnt_word(s, c) + 1));
 	if (arr == 0 || s == 0)
 		return (0);
+	i = 0;
+	j = 0;
 	while (s[i] != '\0')
 	{
 		if (s[i] != c && s[i] != '\0')
 		{
-			arr[j] = ft_substr(&s[i], 0, cnt_letter(&s[i], c));//quote_flag 사용
+			arr[j] = ft_substr(&s[i], 0, cnt_letter(&s[i], c));
 			i += cnt_letter(&s[i], c);
 			if (arr[j] == 0)
 				return (0);
@@ -113,7 +117,7 @@ static char **arr_fill(char **arr, char const *s, char c)
 	return (arr);
 }
 
-char	**word_split(char const *s, char c)//custom_split  word_split 
+char	**word_split(char const *s, char c) 
 {
 	char **arr;
 

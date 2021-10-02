@@ -91,11 +91,10 @@ void Lexicalize_token(char **tokens, t_lex_list *lex_list)
             i++;
             if (tokens[i] == NULL)
             {
-                printf("Lexicalize_token 94 \n");
                 add_lex_node(lex_list, create_lex_node(PIPE_ERR, "| error")); //문구 수정필요...
                 return;
             }
-            else if ( tokens[i][0] == '|' || tokens[0][0] == '|') //EXC_BAD_ACCESS (code=1, address=0x0)
+            else if ( tokens[i][0] == '|' || tokens[0][0] == '|')
                 add_lex_node(lex_list, create_lex_node(PIPE_ERR, tokens[i]));
             else
                 add_lex_node(lex_list, create_lex_node(type, tokens[i]));
@@ -120,80 +119,3 @@ void Lexicalize_token(char **tokens, t_lex_list *lex_list)
         }
     }
 }
-
-
-/*
-
-void Lexicalize_token(char **tokens, t_lex_list *lex_list)
-{
-    int i = 0;
-    int flag = 0;
-    int type;
-
-    while (tokens[i] != 0)
-    {
-        if (ft_strncmp(tokens[i], "<<", 2) == 0 || ft_strncmp(tokens[i], ">>", 2) == 0 ||
-            tokens[i][0] == '<' || tokens[i][0] == '>' || tokens[i][0] == '|')
-        {
-            if (ft_strncmp(tokens[i], "<<", 2) == 0)
-                type = RD_IN_DOUBLE;
-            else if (ft_strncmp(tokens[i], ">>", 2) == 0)
-                type = RD_OUT_DOUBLE;
-            else if (tokens[i][0] == '<')
-                type = RD_IN_SINGLE;
-            else if (tokens[i][0] == '>')
-                type = RD_OUT_SINGLE;
-            else if (tokens[i][0] == '|')
-                type = PIPE;
-            i++;
-            if (tokens[i] == NULL || ft_strncmp(tokens[i], "<<", 2) == 0 || ft_strncmp(tokens[i], ">>", 2) == 0 ||
-            tokens[i][0] == '<' || tokens[i][0] == '>' || tokens[i][0] == '|' || tokens[0][0] == '|')
-            {
-                if (tokens[i] == NULL)
-                {
-                    add_lex_node(lex_list, create_lex_node(NEW_LINE_ERR, "error"));
-                    break ;
-                }
-                else if (ft_strncmp(tokens[i], "<<", 2) == 0)
-                    add_lex_node(lex_list, create_lex_node(RD_OUT_DOUBLE_ERR, tokens[i]));
-                else if (ft_strncmp(tokens[i], ">>", 2) == 0)
-                    add_lex_node(lex_list, create_lex_node(RD_IN_DOUBLE_ERR, tokens[i]));
-                else if (tokens[i][0] == '<')
-                    add_lex_node(lex_list, create_lex_node(RD_OUT_SINGLE_ERR, tokens[i]));
-                else if (tokens[i][0] == '>')
-                    add_lex_node(lex_list, create_lex_node(RD_IN_SINGLE_ERR, tokens[i]));
-                else if (tokens[i][0] == '|')
-                    add_lex_node(lex_list, create_lex_node(PIPE_ERR, tokens[i]));
-            }
-            else
-            {
-                if (type == PIPE)
-                {
-                    flag = 0;
-                    i--;
-                }
-                add_lex_node(lex_list, create_lex_node(type, tokens[i]));
-                i++;
-            }
-        }
-        else
-        {
-            if (flag == 0)
-            {
-                type = CMD;
-                flag = 1;
-            }
-            else if (flag == 1)
-            {
-                if (tokens[i][0] == '-')
-                    type = OPTION;
-                else
-                    type = ARGUMENT;
-            }
-            add_lex_node(lex_list, create_lex_node(type, tokens[i]));
-            i++;
-        }
-    }
-}
-
-*/
